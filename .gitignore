@@ -1,0 +1,8 @@
+venv
+_pycache_
+*.pyc
+media
+*.rdb
+*.pdf
+celerybeat-schedule
+*.sqlite3
