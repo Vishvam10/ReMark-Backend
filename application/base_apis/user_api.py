@@ -3,21 +3,14 @@ from application.models import User
 from application.utils.hash import createHashedPassword, checkHashedPassword
 from application.database import db
 
-from operator import and_
-from sqlalchemy import false, true
-from flask_jwt_extended import jwt_required
 from flask_restful import fields, marshal_with
 from flask_restful import Resource
 from flask import jsonify, request
 
 from flask import current_app as app
 
-from app import cache
-
 import uuid
 
-
-import datetime as dt
 
 user_output_fields = {
     "user_id": fields.String,
