@@ -28,7 +28,8 @@ class Config():
     
 class LocalDevelopmentConfig(Config):
     SQLITE_DB_DIR = os.path.join(basedir, "../db_directory")
-    SQLALCHEMY_DATABASE_URI = "postgresql://postgres:Vishvam1025@localhost/"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + \
+        os.path.join(SQLITE_DB_DIR, "db.sqlite3")
     DEBUG = True
     CORS_HEADERS = "Content-Type"
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))

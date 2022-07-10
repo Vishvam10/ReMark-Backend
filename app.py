@@ -1,18 +1,28 @@
 from flask import Flask
 from flask_restful import Api
+from flask_migrate import Migrate
+
 # from application import workers
 from application.config import LocalDevelopmentConfig
+
 from application.database import db
+# from application.manage import *
+from application.models import Annotation
+from application.models import User
+from application.models import HTMLNodeData
+
 from flask_cors import CORS
 # from flask_caching import Cache
 
-from flask_jwt_extended import JWTManager
+# from flask_jwt_extended import JWTManager
 # from waitress import serve
 
 app = None
 api = None
 celery = None
 cache = None
+
+migrate = Migrate()
 
 def create_app() :
     app = Flask(__name__)
@@ -21,9 +31,12 @@ def create_app() :
     # jwt = JWTManager(app)    
     # app.app_context().push()
     
-    db.init_app(app)
+    db.init_app(app)    
     app.app_context().push()
     
+    migrate.init_app(app, db)
+    app.app_context().push()
+
     CORS(app)
     app.app_context().push()
     
