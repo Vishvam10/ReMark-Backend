@@ -9,7 +9,7 @@ from application.database import db
 # from application.manage import *
 from application.models import Annotation
 from application.models import User
-from application.models import HTMLNodeData
+from application.models import Website
 
 from flask_cors import CORS
 # from flask_caching import Cache
@@ -64,11 +64,11 @@ def create_app() :
 app, api, celery, cache = create_app()
 
 # from application.specific_apis import *
-# from application.base_apis.annotations_api import *
+from application.base_apis.UserAPI import *
 
-from application.specific_apis import dummy_api
+# from application.specific_apis import dummy_api
 
-# api.add_resource(UserAPI, "/api/user", "/api/user/<string:user_id>")
+api.add_resource(UserAPI, "/api/user", "/api/user/<string:user_id>")
 # api.add_resource(DeckAPI, "/api/deck", "/api/deck/<string:deck_id>")
 # api.add_resource(CardAPI, "/api/card", "/api/card/<string:deck_id>")
 # api.add_resource(ReviewAPI, "/api/review/<string:deck_id>")
