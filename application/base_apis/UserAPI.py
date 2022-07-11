@@ -1,6 +1,8 @@
+import uuid
+
 from application.utils.validation import BusinessValidationError
-from application.models import User
-from application.utils.hash import createHashedPassword, checkHashedPassword
+from application.utils.hash import check_hashed_password, check_hashed_password, create_hashed_password
+
 from application.database import db
 
 from flask_restful import fields, marshal_with
@@ -9,15 +11,17 @@ from flask import jsonify, request
 
 from flask import current_app as app
 
-import uuid
+from application.models.User import User
 
 
 user_output_fields = {
     "user_id": fields.String,
     "username": fields.String,
     "email_id": fields.String,
-    "webhook_url": fields.String,
-    "app_preferences": fields.String,
+    "authority": fields.String,
+    "bio": fields.String,
+    "created_at": fields.String,
+    "modified_at": fields.String,
 }
 
 # _ User API
@@ -32,23 +36,33 @@ class UserAPI(Resource):
     def post(self):
         ID = str(uuid.uuid4()).replace("-", "")
         data = request.json
+        email_id = data["email_id"]
         username = data["username"]
         password = data["password"]
-        email = data["email"]
-        webhook_url = ""
-        app_preferences = ""
+        bio = data["bio"]
+        authority = data["authority"]
+        api_key = data['api_key']
 
+        if email_id is None or email_id == "":
+            raise BusinessValidationError(
+                status_code=400, error_message="Email ID is required")
         if username is None or username == "":
             raise BusinessValidationError(
                 status_code=400, error_message="Username is required")
         if password is None or password == "":
             raise BusinessValidationError(
                 status_code=400, error_message="Password is required")
-        if email is None or email == "":
-            raise BusinessValidationError(
-                status_code=400, error_message="Email ID is required")
     
-        hashed_password = createHashedPassword(password)
+        if api_key is None or api_key == "" :
+            if authority != "user" or authority == "" :
+                raise BusinessValidationError(
+                    status_code=400, error_message="Authority is incorrectly specified")
+        else :
+            if authority != "admin" or authority == "" :
+                raise BusinessValidationError(status_code=400, error_message="Authority is incorrectly specified")
+
+
+        hashed_password = create_hashed_password(password)
 
         user = db.session.query(User).filter(User.username == username).first()
         
@@ -56,16 +70,18 @@ class UserAPI(Resource):
             raise BusinessValidationError(
                 status_code=400, error_message="Duplicate user")
 
-        new_user = User(user_id=ID, username=username,
-                        password=hashed_password, email_id=email, phone_no=phone, webhook_url=webhook_url, app_preferences=app_preferences)
+        new_user = User(user_id=ID, username=username, password=hashed_password, email_id=email_id, authority=authority, api_key=api_key, bio=bio)
+
         db.session.add(new_user)
         db.session.commit()
 
         return_value = {
             "message": "New User Created",
-            "status": 200,
-            "user_id": ID,
-            "user_name": username,
+            "status": 201,
+            "data" : {
+                "user_id": ID,
+                "user_name": username,
+            }
         }
 
         return jsonify(return_value)
@@ -73,8 +89,9 @@ class UserAPI(Resource):
     @marshal_with(user_output_fields)
     def put(self, user_id) :
         data = request.json
-        username = data["user_name"]
+        username = data["username"]
         email_id = data["email_id"]
+        bio = data["bio"]
 
         if(not user_id or not username or not email_id) :
             raise BusinessValidationError(status_code=400, error_message="One or more fields are missing")
@@ -88,7 +105,6 @@ class UserAPI(Resource):
         
         for u in user_list :
             ud = u.__dict__
-            print("********** USER **********", ud)
             if(user.username != username and ud["username"] == username) :
                 raise BusinessValidationError(status_code=400, error_message="Username already exists")
             if(user.email_id != email_id and ud["email_id"] == email_id) :
@@ -96,6 +112,7 @@ class UserAPI(Resource):
 
         user.username = username
         user.email_id = email_id
+        user.bio = bio
 
         db.session.add(user)
         db.session.commit()
@@ -105,8 +122,8 @@ class UserAPI(Resource):
         # 1. Delete all data
 
         # 2. Delete the user
-        db.session.query(User).filter(User.user_id == user_id).delete(synchronize_session=False)
-        db.session.commit()
+        # db.session.query(User).filter(User.user_id == user_id).delete(synchronize_session=False)
+        # db.session.commit()
 
         return_value = {
             "user_id": user_id,
@@ -122,7 +139,13 @@ def get_all_users() :
     users = db.session.query(User).all()
     data = []
     for u in users : 
-        data.append((u.__dict__["username"], u.__dict__["user_id"]))
+        data.append(
+            {
+                "user_id": u.__dict__["user_id"], 
+                "username" : u.__dict__["username"],
+                "email_id": u.__dict__["email_id"]
+            }
+        )
     return_value = {
         "data" : data
     }
@@ -181,24 +204,27 @@ def reset_password(user_id) :
     
     user = db.session.query(User).filter(User.user_id == user_id).first()
 
+    if user is None :
+        raise BusinessValidationError(
+            status_code=400, error_message="No such user exists")
+
+
     hashed_password = user.password
     string_password = hashed_password.decode('utf8')
 
-    # print("***************** OLD HASHED PASSWORD *****************", string_password)
-    if(not checkHashedPassword(current_password, string_password)):
+    if(not check_hashed_password(current_password, string_password)):
         raise BusinessValidationError(
             status_code=400, error_message="Incorrect Password")
     
-    new_hashed_password = createHashedPassword(new_password)
+    new_hashed_password = create_hashed_password(new_password)
     user.password = new_hashed_password
     
-    # print("***************** NEW PASSWORD *****************", new_hashed_password)
     db.session.add(user)
     db.session.commit()
 
     return_value = {
         "message": "Password Changed Successfully",
-        "status": 200,
+        "status": 204,
         "new_password" : new_password
     }
 

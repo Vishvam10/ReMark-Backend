@@ -9,16 +9,15 @@ class User(db.Model):
     username = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, unique=True, nullable=False)
     email_id = db.Column(db.String, unique=True, nullable=False)
+
+    bio = db.Column(db.String, unique=False, nullable=True)
     
-    authority = db.Column(db.String, unique=True, nullable=False)
-    api_key = db.Column(db.String, unique=True, nullable=False)
+    authority = db.Column(db.String, unique=False, nullable=False)
+    api_key = db.Column(db.String, unique=True, nullable=True)
     
     
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
-    updated_at = db.Column(db.DateTime(timezone=True), onupdate=func.now()) 
-
-    webhook_url = db.Column(db.String, unique=True, nullable=True)
-    app_preferences = db.Column(db.String, nullable=False)
+    modified_at = db.Column(db.DateTime(timezone=True), onupdate=func.now())
 
     # def __init__(self, user_id, username, password, email_id, authority, api_key, created_at, updated_at, webhook_url, app_preferences):
     #     self.user_id = user_id
@@ -36,5 +35,5 @@ class User(db.Model):
     #     self.app_preferences = app_preferences
 
     def to_dict(self):
-        return dict(id=self.user_id, username=self.username, password=self.password, email_id=self.email_id, webhook_url=self.webhook_url, app_preferences=self.app_preferences, user_preferences=self.user_preferences)
+        return dict(id=self.user_id, username=self.username, password=self.password, email_id=self.email_id, created_at=self.created_at, modified_at=self.modified_at, authority=self.authority, api_key=self.api_key)
 
