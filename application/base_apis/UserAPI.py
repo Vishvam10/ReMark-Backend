@@ -24,9 +24,6 @@ user_output_fields = {
     "modified_at": fields.String,
 }
 
-# _ User API
-
-
 class UserAPI(Resource):
     @marshal_with(user_output_fields)
     def get(self, user_id) :
@@ -137,19 +134,20 @@ class UserAPI(Resource):
 @app.route('/api/user/all', methods=["GET"])
 def get_all_users() :
     users = db.session.query(User).all()
-    data = []
-    for u in users : 
-        data.append(
-            {
-                "user_id": u.__dict__["user_id"], 
-                "username" : u.__dict__["username"],
-                "email_id": u.__dict__["email_id"]
-            }
-        )
-    return_value = {
-        "data" : data
-    }
-    return jsonify(return_value)
+    # data = []
+    # for u in users : 
+    #     data.append(
+    #         # {
+    #         #     "user_id": u.__dict__["user_id"], 
+    #         #     "username" : u.__dict__["username"],
+    #         #     "email_id": u.__dict__["email_id"]
+    #         # }
+    #         json.u.__dict__
+    #     )
+    # return_value = {
+    #     "data" : data
+    # }
+    return jsonify(users)
 
 @app.route('/api/user/update_user_preferences/<string:user_id>', methods=["GET","PUT"])
 def user_preferences(user_id) :
@@ -186,7 +184,6 @@ def user_preferences(user_id) :
         }
 
         return jsonify(return_value)
-
 
 @app.route('/api/password_reset/<string:user_id>', methods=["POST"])
 def reset_password(user_id) :

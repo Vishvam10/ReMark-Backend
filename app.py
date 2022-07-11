@@ -65,11 +65,12 @@ app, api, celery, cache = create_app()
 
 # from application.specific_apis import *
 from application.base_apis.UserAPI import *
+from application.base_apis.AnnotationAPI import *
 
 # from application.specific_apis import dummy_api
 
 api.add_resource(UserAPI, "/api/user", "/api/user/<string:user_id>")
-# api.add_resource(DeckAPI, "/api/deck", "/api/deck/<string:deck_id>")
+# api.add_resource(AnnotationAPI, "/api/annotation", "/api/annotation/<string:deck_id>")
 # api.add_resource(CardAPI, "/api/card", "/api/card/<string:deck_id>")
 # api.add_resource(ReviewAPI, "/api/review/<string:deck_id>")
 

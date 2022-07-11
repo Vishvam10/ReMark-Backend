@@ -27,8 +27,6 @@ class Annotations(db.Model):
 
     created_by = db.Column(db.String, unique=False, nullable=False)
 
-    user_id = db.Column(db.String, db.ForeignKey("user.user_id"), nullable=False)
-
     def to_dict(self):
-        return dict(user_id=self.user_id, annotation_id=self.annotation_id, content=self.content, html_content=self.html_content, parent_node=self.parent_node, tags=self.tags, upvotes=self.upvotes, downvotes=self.downvotes, mod_required=self.mod_required, created_at=self.created_at, updated_at=self.updated_at)
+        return dict(annotation_id=self.annotation_id, content=self.content, html_content=self.html_content, parent_node=self.parent_node, tags=self.tags, upvotes=self.upvotes, downvotes=self.downvotes, mod_required=self.mod_required, created_at=self.created_at, updated_at=self.updated_at)
 
