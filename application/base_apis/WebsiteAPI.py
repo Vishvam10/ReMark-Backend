@@ -23,7 +23,6 @@ website_output_fields = {
 
     "admin" : fields.String,
     "admin_type" : fields.String,
-
 }
 
 class WebsiteAPI(Resource):

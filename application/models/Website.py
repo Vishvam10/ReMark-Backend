@@ -19,7 +19,7 @@ class Website(db.Model):
     n_annotations = db.Column(db.Integer, unique=False, nullable=True)
     annotation_limit = db.Column(db.Integer, unique=False, nullable=True) 
 
-    admin = db.Column(db.Integer, db.ForeignKey('User.user_id'), nullable=False)
+    admin = db.Column(db.String, unique=True, nullable=False)
     admin_type = db.Column(db.String, unique=False, nullable=False)
 
 

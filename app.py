@@ -64,13 +64,16 @@ app, api, celery, cache = create_app()
 
 # from application.specific_apis import *
 from application.base_apis.UserAPI import *
-from application.base_apis.AnnotationAPI import *
+from application.base_apis.WebsiteAPI import *
+from application.base_apis.TokenAPI import *
+# from application.base_apis.AnnotationAPI import *
 
-# from application.specific_apis import dummy_api
+# from application.specific_apis import token_generator
 
 api.add_resource(UserAPI, "/api/user", "/api/user/<string:user_id>")
-api.add_resource(AnnotationAPI, "/api/annotation", "/api/annotation/<string:annotation_in>")
-# api.add_resource(CardAPI, "/api/card", "/api/card/<string:deck_id>")
+# api.add_resource(AnnotationAPI, "/api/annotation", "/api/annotation/<string:annotation_in>")
+api.add_resource(WebsiteAPI, "/api/website", "/api/website/<string:website_id>")
+api.add_resource(TokenAPI, "/api/token/<string:user_id>")
 # api.add_resource(ReviewAPI, "/api/review/<string:deck_id>")
 
 if __name__ == '__main__':
