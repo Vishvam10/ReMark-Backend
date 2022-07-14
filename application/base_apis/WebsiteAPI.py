@@ -39,18 +39,23 @@ class WebsiteAPI(Resource):
         website_url = data["website_url"]
         n_annotations = 0
 
-        admin = data["admin_user_id"]
+        admin_id = data["admin_id"]
         admin_type = data["admin_type"]
 
         if website_url is None or website_url == "":
             raise BusinessValidationError(
                 status_code=400, error_message="Website URL is required")
-        if admin is None or admin == "":
+        if admin_id is None or admin_id == "":
             raise BusinessValidationError(
                 status_code=400, error_message="Admin user ID is required")
         if admin_type is None or admin_type == "":
             raise BusinessValidationError(
                 status_code=400, error_message="Admin type is required")
+
+        user = db.session.query(User).filter(User.user_id == admin_id).first()
+        
+        if(user is None):
+            raise BusinessValidationError(status_code=400, error_message="Invalid user ID or no such user exists")
 
         if(admin_type == "BASIC") :
             annotation_limit = 1000
@@ -61,7 +66,7 @@ class WebsiteAPI(Resource):
 
         website_id = generate_random_id()
 
-        new_website = Website(website_id=website_id, website_url=website_url, n_annotations=n_annotations, annotation_limit=annotation_limit, admin=admin, admin_type=admin_type)
+        new_website = Website(website_id=website_id, website_url=website_url, n_annotations=n_annotations, annotation_limit=annotation_limit, admin=admin_id, admin_type=admin_type)
 
         db.session.add(new_website)
         db.session.commit()
@@ -72,7 +77,7 @@ class WebsiteAPI(Resource):
             "data" : {
                 "website_url": website_url,
                 "website_id": website_id,
-                "admin" : admin,
+                "admin" : admin_id,
                 "admin_type" : admin_type
             }
         }
