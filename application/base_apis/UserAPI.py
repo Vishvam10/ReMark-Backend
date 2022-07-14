@@ -1,5 +1,3 @@
-import uuid
-
 from application.utils.validation import BusinessValidationError
 from application.utils.hash import check_hashed_password, check_hashed_password, create_hashed_password, generate_random_id
 

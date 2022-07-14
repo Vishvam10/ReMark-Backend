@@ -25,9 +25,7 @@ class User(db.Model):
 
     bio = db.Column(db.String, unique=False, nullable=True)
     
-    authority = db.Column(db.String, unique=False, nullable=False)
-    api_key = db.Column(db.String, unique=True, nullable=True)
-    
+    authority = db.Column(db.String, unique=False, nullable=False)    
     
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     modified_at = db.Column(db.DateTime(timezone=True), onupdate=func.now())
@@ -49,4 +47,3 @@ class User(db.Model):
 
     # def to_dict(self):
     #     return dict(id=self.user_id, username=self.username, password=self.password, email_id=self.email_id, created_at=self.created_at, modified_at=self.modified_at, authority=self.authority, api_key=self.api_key)
-
