@@ -1,12 +1,10 @@
-from __future__ import annotations
 import uuid
 
-from pyparsing import html_comment
 from application.models.Annotation import Annotation
 from application.models.User import User
+from application.models.Website import Website
 
 from application.utils.validation import BusinessValidationError
-from application.utils.hash import check_hashed_password, check_hashed_password, create_hashed_password
 
 from application.database import db
 
@@ -15,9 +13,6 @@ from flask_restful import Resource
 from flask import jsonify, request
 
 from flask import current_app as app
-
-from application.models.Annotation import *
-
 
 annotation_output_fields = {
     "annotation_id" : fields.String,
@@ -44,7 +39,13 @@ annotation_output_fields = {
 class AnnotationAPI(Resource):
     @marshal_with(annotation_output_fields)
     def get(self, website_id) :
-        annotation = db.session.query(Annotation).filter(Annotation.website_id == website_id).first()
+        args = request.args
+        website_id = args.get("website_id")
+        website_present = db.session.query(Website).filter(Website.website_id == website_id).first()
+        if(website_id) :
+            if(website_present) :
+                annotation = db.session.query(Annotation).filter(Annotation.website_id == website_id).first()
+        
         return annotation
 
     def post(self):
@@ -72,7 +73,7 @@ class AnnotationAPI(Resource):
         if content is None or content == "":
             raise BusinessValidationError(
                 status_code=400, error_message="Content is required")
-        if html_comment is None or html_comment == "":
+        if html_content is None or html_content == "":
             raise BusinessValidationError(
                 status_code=400, error_message="HTML content is required")
 
@@ -110,7 +111,7 @@ class AnnotationAPI(Resource):
         if content is None or content == "":
             raise BusinessValidationError(
                 status_code=400, error_message="Content is required")
-        if html_comment is None or html_comment == "":
+        if html_content is None or html_content == "":
             raise BusinessValidationError(
                 status_code=400, error_message="HTML content is required")
 
@@ -169,82 +170,3 @@ def get_all_annotations() :
         "data" : data
     }
     return jsonify(return_value)
-
-@app.route('/api/user/update_user_preferences/<string:user_id>', methods=["GET","PUT"])
-def user_preferences(user_id) :
-    if(request.method == "GET") :
-        user = db.session.query(User).filter(User.user_id == user_id).first()    
-        if(user is None):
-            raise BusinessValidationError(status_code=400, error_message="Invalid user ID or no such user exists")
-        
-        data = {
-            "webhook_url" : user.webhook_url,
-            "user_preferences" : user.user_preferences
-        }
-        return jsonify(data)
-
-    if(request.method == "PUT") :
-        data = request.json
-        webhook_url = data["webhook_url"]
-        user_preferences = data["user_preferences"]
-        
-        user = db.session.query(User).filter(User.user_id == user_id).first()
-            
-        if(user is None):
-            raise BusinessValidationError(status_code=400, error_message="Invalid user ID or no such user exists")
-
-        user.webhook_url = webhook_url
-        user.user_preferences = user_preferences
-        
-
-        db.session.add(user)
-        db.session.commit()
-
-        return_value = {
-            "message" : "Updated user preferences"
-        }
-
-        return jsonify(return_value)
-
-@app.route('/api/password_reset/<string:user_id>', methods=["POST"])
-def reset_password(user_id) :
-    data = request.json
-    current_password = data["current_password"]
-    new_password = data["new_password"]
-    
-    # print("***************** OLD PASSWORD *****************", current_password)
-    if current_password is None or current_password == "":
-        raise BusinessValidationError(
-            status_code=400, error_message="Current Password is required")
-    if new_password is None or new_password == "":
-        raise BusinessValidationError(
-            status_code=400, error_message="New Password is required")
-    
-    user = db.session.query(User).filter(User.user_id == user_id).first()
-
-    if user is None :
-        raise BusinessValidationError(
-            status_code=400, error_message="No such user exists")
-
-
-    hashed_password = user.password
-    string_password = hashed_password.decode('utf8')
-
-    if(not check_hashed_password(current_password, string_password)):
-        raise BusinessValidationError(
-            status_code=400, error_message="Incorrect Password")
-    
-    new_hashed_password = create_hashed_password(new_password)
-    user.password = new_hashed_password
-    
-    db.session.add(user)
-    db.session.commit()
-
-    return_value = {
-        "message": "Password Changed Successfully",
-        "status": 204,
-        "new_password" : new_password
-    }
-
-    return jsonify(return_value)
-

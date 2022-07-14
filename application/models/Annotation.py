@@ -2,14 +2,26 @@ from application.database import db
 
 from sqlalchemy.sql import func
 
-class Annotations(db.Model):
+class Annotation(db.Model):
     __tablename__ = "annotation"
 
     annotation_id = db.Column(db.String, unique=True, nullable=False, primary_key=True)
     website_id = db.Column(db.String, unique=True, nullable=False, primary_key=True)
 
+    
+    # https://somesite.com/articles/34md23j4#selected1
+    # ------------ URL -------------
+    # ---------------------- URI ---------------------
+    
+    # URI changes a lot especially for SPAs
+
+    website_url = db.Column(db.String, unique=False, nullable=False)
+    website_uri = db.Column(db.String, unique=False, nullable=False)
+
+    html_node_id = db.Column(db.String, unique=True, nullable=False)
+
     content = db.Column(db.String, unique=False, nullable=False)
-    html_content = db.Column(db.String, unique=False, nullable=False)
+    content_html = db.Column(db.String, unique=False, nullable=False)
 
     parent_node = db.Column(db.String, unique=False, nullable=True)
 

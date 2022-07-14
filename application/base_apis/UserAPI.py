@@ -1,7 +1,7 @@
 import uuid
 
 from application.utils.validation import BusinessValidationError
-from application.utils.hash import check_hashed_password, check_hashed_password, create_hashed_password
+from application.utils.hash import check_hashed_password, check_hashed_password, create_hashed_password, generate_random_id
 
 from application.database import db
 
@@ -31,7 +31,7 @@ class UserAPI(Resource):
         return user
 
     def post(self):
-        ID = str(uuid.uuid4()).replace("-", "")
+        ID = generate_random_id()
         data = request.json
         email_id = data["email_id"]
         username = data["username"]
