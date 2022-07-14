@@ -141,7 +141,7 @@ class AnnotationAPI(Resource):
 
         return_value = {
             "annotation_id": annotation_id,
-            "message": "Annotation deleted succesfully",
+            "message": "Annotation deleted successfully",
             "status": 200,
         }
 

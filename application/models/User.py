@@ -11,7 +11,6 @@ class User(db.Model):
 
     user_id : str
     username : str
-    password : str
     email_id : str
     bio : str
     authority : str

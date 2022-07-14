@@ -11,6 +11,7 @@ from flask import current_app as app
 
 from application.models.User import User
 
+allowed_authorities = ["admin", "user"]
 
 user_output_fields = {
     "user_id": fields.String,
@@ -36,7 +37,6 @@ class UserAPI(Resource):
         password = data["password"]
         bio = data["bio"]
         authority = data["authority"]
-        api_key = data['api_key']
 
         if email_id is None or email_id == "":
             raise BusinessValidationError(
@@ -48,13 +48,8 @@ class UserAPI(Resource):
             raise BusinessValidationError(
                 status_code=400, error_message="Password is required")
     
-        if api_key is None or api_key == "" :
-            if authority != "user" or authority == "" :
-                raise BusinessValidationError(
-                    status_code=400, error_message="Authority is incorrectly specified")
-        else :
-            if authority != "admin" or authority == "" :
-                raise BusinessValidationError(status_code=400, error_message="Authority is incorrectly specified")
+        if authority not in allowed_authorities:
+            raise BusinessValidationError(status_code=400, error_message="Authority is incorrectly specified")
 
 
         hashed_password = create_hashed_password(password)
@@ -65,7 +60,7 @@ class UserAPI(Resource):
             raise BusinessValidationError(
                 status_code=400, error_message="Duplicate user")
 
-        new_user = User(user_id=ID, username=username, password=hashed_password, email_id=email_id, authority=authority, api_key=api_key, bio=bio)
+        new_user = User(user_id=ID, username=username, password=hashed_password, email_id=email_id, authority=authority, bio=bio)
 
         db.session.add(new_user)
         db.session.commit()
@@ -122,7 +117,7 @@ class UserAPI(Resource):
 
         return_value = {
             "user_id": user_id,
-            "message": "User deleted succesfully",
+            "message": "User deleted successfully",
             "status": 200,
         }
 
