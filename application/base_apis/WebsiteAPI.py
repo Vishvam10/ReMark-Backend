@@ -1,11 +1,9 @@
-import uuid
-
-from application.models.Annotation import Annotation
 from application.models.User import User
 from application.models.Website import Website
 
 from application.utils.validation import BusinessValidationError
 from application.utils.hash import generate_random_id
+from application.utils.url_operations import get_url
 
 from application.database import db
 
@@ -53,9 +51,11 @@ class WebsiteAPI(Resource):
                 status_code=400, error_message="Admin type is required")
 
         user = db.session.query(User).filter(User.user_id == admin_id).first()
-        
+
         if(user is None):
-            raise BusinessValidationError(status_code=400, error_message="Invalid user ID or no such user exists")
+            raise BusinessValidationError(status_code=400, error_message="No such user exists")
+        
+    
 
         if(admin_type == "BASIC") :
             annotation_limit = 1000
@@ -65,6 +65,7 @@ class WebsiteAPI(Resource):
             raise BusinessValidationError(status_code=400, error_message="Invalid admin type")
 
         website_id = generate_random_id()
+        website_url = get_url(website_url)
 
         new_website = Website(website_id=website_id, website_url=website_url, n_annotations=n_annotations, annotation_limit=annotation_limit, admin=admin_id, admin_type=admin_type)
 
@@ -80,6 +81,23 @@ class WebsiteAPI(Resource):
                 "admin" : admin_id,
                 "admin_type" : admin_type
             }
+        }
+
+        return jsonify(return_value)
+
+    def delete(self, website_id) :
+        
+        website = db.session.query(Website).filter(Website.website_id == website_id).first()
+        if(website is None) : 
+            raise BusinessValidationError(status_code=400, error_message="No such website ID exists")
+            
+        db.session.query(Website).filter(Website.website_id == website_id).delete(synchronize_session=False)
+        db.session.commit()
+
+        return_value = {
+            "website_id": website_id,
+            "message": "Website deleted successfully",
+            "status": 200,
         }
 
         return jsonify(return_value)
