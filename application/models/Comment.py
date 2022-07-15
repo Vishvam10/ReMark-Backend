@@ -47,5 +47,5 @@ class Comment(db.Model):
     created_by = db.Column(db.String, unique=False, nullable=False)
 
     def to_dict(self):
-        return dict(comment_id=self.comment_id, content=self.content, html_content=self.html_content, parent_node=self.parent_node, tags=self.tags, upvotes=self.upvotes, downvotes=self.downvotes, mod_required=self.mod_required, created_at=self.created_at, updated_at=self.updated_at, created_by=self.created_by)
+        return dict(comment_id=self.comment_id, content=self.content, content_html=self.content_html, parent_node=self.parent_node, upvotes=self.upvotes, downvotes=self.downvotes, mod_required=self.mod_required, created_at=self.created_at, updated_at=self.updated_at, created_by=self.created_by)
 

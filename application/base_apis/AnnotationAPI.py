@@ -142,7 +142,7 @@ class AnnotationAPI(Resource):
         return annotation
 
     def delete(self, annotation_id) :
-        # 1. Delete all replies
+        # 1. Delete all comments
 
         # 2. Delete the annotation
         # db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).delete(synchronize_session=False)

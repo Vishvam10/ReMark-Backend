@@ -1,5 +1,6 @@
 import uuid
 
+from application.models.User import User
 from application.models.Annotation import Annotation
 from application.models.Comment import Comment
 
@@ -17,7 +18,6 @@ class CommentAPI(Resource):
         if(annotation is None) :
             raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID")
 
-        print("****************************** COMMENTS *******************************", annotation.comments)       
         return_value = {
             "message": "New Comment Created",
             "status": 201,
@@ -72,54 +72,70 @@ class CommentAPI(Resource):
 
         return jsonify(return_value)
 
-    # @marshal_with(annotation_output_fields)
-    # def put(self, annotation_id) :
-    #     data = request.json
-
-    #     user_id = data["user_id"]
-    #     content = data["content"]
-    #     html_content = data["html_content"]
-    #     tags = data["tags"]
-
-    #     if user_id is None or user_id == "":
-    #         raise BusinessValidationError(
-    #             status_code=400, error_message="User ID is required")
-    #     if content is None or content == "":
-    #         raise BusinessValidationError(
-    #             status_code=400, error_message="Content is required")
-    #     if html_content is None or html_content == "":
-    #         raise BusinessValidationError(
-    #             status_code=400, error_message="HTML content is required")
-
-    #     annotation = db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).first()
-    #     user = db.session.query(User).filter(User.user_id == user_id).first()
+    def put(self):        
+        data = request.json
+        user_id = data["user_id"]
+        comment_id = data["comment_id"]
         
-    #     if(annotation is None):
-    #         raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID or no such annotation exists")
-    #     if(user is None):
-    #         raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID or no such annotation exists")
+        user = db.session.query(User).filter(User.user_id == user_id).first()
 
-    #     annotation.content = content
-    #     annotation.html_content = html_content
-    #     annotation.tags = tags
-    #     annotation.modified_by = user_id
+        if(user is None) :
+            raise BusinessValidationError(status_code=400, error_message="Invalid user ID")
 
-    #     db.session.add(annotation)
-    #     db.session.commit()
-    #     return annotation
+        comment = db.session.query(Comment).filter(Comment.comment_id == comment_id).first()
 
-    # def delete(self, annotation_id) :
-    #     # 1. Delete all replies
+        if(comment is None) :
+            raise BusinessValidationError(status_code=400, error_message="Invalid comment ID")
 
-    #     # 2. Delete the annotation
-    #     # db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).delete(synchronize_session=False)
-    #     # db.session.commit()
+        if(comment.__dict__["created_by"] != user_id) :
+            raise BusinessValidationError(status_code=409, error_message="Can not edit this comment as it is made by someone else")
 
-    #     return_value = {
-    #         "annotation_id": annotation_id,
-    #         "message": "Annotation deleted successfully",
-    #         "status": 200,
-    #     }
 
-    #     return jsonify(return_value)
+        new_content = data["new_content"]
+        new_content_html = data["new_content_html"]
+
+        if new_content is None or new_content == "":
+            raise BusinessValidationError(
+                status_code=400, error_message="Content is required")
+        if new_content_html is None or new_content_html == "":
+            raise BusinessValidationError(
+                status_code=400, error_message="HTML node data tag is required")
+
+        comment.content = new_content
+        comment.content_html = new_content_html
+
+        print("************************ DEBUG ************************", comment)
+
+        db.session.add(comment)
+        db.session.commit()
+
+        return_value = {
+            "message": "Comment Edited",
+            "status": 200,
+            "data" : {
+                "created_by": user_id,
+                "new_content" : new_content,
+                "new_content_html" : new_content_html,
+            }
+        }
+
+        return jsonify(return_value)
+
+    def delete(self, annotation_id) :
+        # (FUTURE) Delete all replies as well
+
+        annotation = db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).first()
+        if(annotation is None) :
+            raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID")
+    
+        db.session.query(Comment).filter(Comment.annotation_id == annotation_id).delete(synchronize_session=False)
+        db.session.commit()
+
+        return_value = {
+            "annotation_id": annotation_id,
+            "message": "Comments deleted successfully",
+            "status": 200,
+        }
+
+        return jsonify(return_value)
 
