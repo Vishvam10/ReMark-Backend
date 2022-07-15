@@ -8,8 +8,8 @@ from application.config import LocalDevelopmentConfig
 from application.database import db
 
 from application.models.User import *
-from application.models.Annotation import *
 from application.models.Comment import *
+from application.models.Annotation import *
 from application.models.Website import *
 
 from flask_cors import CORS
@@ -66,8 +66,8 @@ app, api, celery, cache = create_app()
 
 # from application.specific_apis import *
 from application.base_apis.UserAPI import *
-from application.base_apis.AnnotationAPI import *
 from application.base_apis.CommentAPI import *
+from application.base_apis.AnnotationAPI import *
 from application.base_apis.WebsiteAPI import *
 from application.base_apis.TokenAPI import *
 # from application.base_apis.AnnotationAPI import *

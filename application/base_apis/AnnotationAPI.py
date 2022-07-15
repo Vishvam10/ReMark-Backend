@@ -15,20 +15,18 @@ from flask import jsonify, request
 
 from flask import current_app as app
 
+comment_output_fields = {
+    'comment_id': fields.String,
+    'created_by': fields.String,
+    'content': fields.String,
+}
+
 annotation_output_fields = {
     "annotation_id" : fields.String,
     "website_id" : fields.String,
     "website_uri" : fields.String,
 
-    "content" : fields.String,
-    "html_content" : fields.String,
-
-    "parent_node" : fields.String,
-
-    "tags" : fields.String,
-    "upvotes" : fields.Integer,
-    "downvotes" : fields.Integer,
-    "mod_required" : fields.Boolean,
+    "html_node_data_tag" : fields.String,
 
     "resolved" : fields.Boolean,
 
@@ -36,6 +34,8 @@ annotation_output_fields = {
     "modified_at" : fields.DateTime, 
     "created_by" : fields.String,
     "modified_by" : fields.String,
+
+    "comments" : fields.List(fields.Nested(comment_output_fields))
 }
 
 class AnnotationAPI(Resource):
@@ -44,6 +44,7 @@ class AnnotationAPI(Resource):
         annotation = db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).first()
         if(annotation is None) :
             raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID")
+        print("******************************************* ANNOTATION *******************************************", annotation)
         return annotation
 
     def post(self):
