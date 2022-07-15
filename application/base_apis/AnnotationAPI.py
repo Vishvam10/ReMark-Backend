@@ -1,4 +1,5 @@
 import uuid
+from venv import create
 
 from application.models.Annotation import Annotation
 from application.models.User import User
@@ -17,6 +18,7 @@ from flask import current_app as app
 annotation_output_fields = {
     "annotation_id" : fields.String,
     "website_id" : fields.String,
+    "website_uri" : fields.String,
 
     "content" : fields.String,
     "html_content" : fields.String,
@@ -38,47 +40,37 @@ annotation_output_fields = {
 
 class AnnotationAPI(Resource):
     @marshal_with(annotation_output_fields)
-    def get(self, website_id) :
-        args = request.args
-        website_id = args.get("website_id")
-        website_present = db.session.query(Website).filter(Website.website_id == website_id).first()
-        if(website_id) :
-            if(website_present) :
-                annotation = db.session.query(Annotation).filter(Annotation.website_id == website_id).first()
-        
+    def get(self, annotation_id) :
+        annotation = db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).first()
+        if(annotation is None) :
+            raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID")
         return annotation
 
     def post(self):
         annotation_id = str(uuid.uuid4()).replace("-", "")
-        website_id = str(uuid.uuid4()).replace("-", "")
+        
         data = request.json
         
+        annotation_name = data["annotation_name"]
+        website_id = data["website_id"]
+        website_uri = data["website_uri"]
         created_by = data["user_id"]
-
-        content = data["content"]
-        html_content = data["html_content"]
-        parent_node = data["parent_node"]
+        html_node_data_tag = data["html_node_data_tag"]
 
         tags = data["tags"]
-        upvotes = 0
-        downvotes = 0
-        mod_required = False
         resolved = False
-
-
 
         if created_by is None or created_by == "":
             raise BusinessValidationError(
                 status_code=400, error_message="User ID is required")
-        if content is None or content == "":
+        if annotation_name is None or annotation_name == "":
             raise BusinessValidationError(
                 status_code=400, error_message="Content is required")
-        if html_content is None or html_content == "":
+        if html_node_data_tag is None or html_node_data_tag == "":
             raise BusinessValidationError(
-                status_code=400, error_message="HTML content is required")
+                status_code=400, error_message="HTML node data tag is required")
 
-
-        new_annotation = Annotation(annotation_id=annotation_id, website_id=website_id,content=content, html_content=html_content, parent_node=parent_node, tags=tags, upvotes=upvotes, downvotes=downvotes, mod_required=mod_required, resolved=resolved)
+        new_annotation = Annotation(annotation_id=annotation_id, annotation_name=annotation_name, website_id=website_id, website_uri=website_uri, html_node_data_tag=html_node_data_tag, tags=tags, resolved=resolved, created_by=created_by)
 
         db.session.add(new_annotation)
         db.session.commit()
@@ -88,9 +80,10 @@ class AnnotationAPI(Resource):
             "status": 201,
             "data" : {
                 "created_by": created_by,
-                "content": content,
-                "html_content" : html_content,
-                "website_id" : website_id
+                "annotation_id": annotation_id,
+                "annotation_name" : annotation_name,
+                "html_node_data_tag" : html_node_data_tag,
+                "created_by" : created_by
             }
         }
 
