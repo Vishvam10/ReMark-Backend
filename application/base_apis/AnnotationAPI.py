@@ -3,7 +3,7 @@ import uuid
 from venv import create
 
 from application.models.Annotation import Annotation
-from application.models.User import User
+from application.models.Comment import Comment 
 from application.models.Website import Website
 
 from application.utils.validation import BusinessValidationError
@@ -64,6 +64,16 @@ class AnnotationAPI(Resource):
         tags = data["tags"]
         resolved = False
 
+        website = db.session.query(Website).filter(Website.website_id == website_id).first()
+        if website is None :
+            raise BusinessValidationError(status_code=400, error_message="No such website ID exists")
+
+        n_annotations = website.__dict__["n_annotations"]
+        annotation_limit = website.__dict__["annotation_limit"]
+
+        if(n_annotations + 1 > annotation_limit) :
+            raise BusinessValidationError(status_code=400, error_message="Annotation limit exceeded")
+
         if created_by is None or created_by == "":
             raise BusinessValidationError(
                 status_code=400, error_message="User ID is required")
@@ -74,9 +84,15 @@ class AnnotationAPI(Resource):
             raise BusinessValidationError(
                 status_code=400, error_message="HTML node data tag is required")
 
+        # 1. Add the annotation
         new_annotation = Annotation(annotation_id=annotation_id, annotation_name=annotation_name, website_id=website_id, website_uri=website_uri, html_node_data_tag=html_node_data_tag, tags=tags, resolved=resolved, created_by=created_by)
 
         db.session.add(new_annotation)
+
+        # 2. Update n_annotations for that website_id
+        website.n_annotations = (n_annotations + 1)
+        db.session.add(website)
+
         db.session.commit()
 
         return_value = {
@@ -87,7 +103,8 @@ class AnnotationAPI(Resource):
                 "annotation_id": annotation_id,
                 "annotation_name" : annotation_name,
                 "html_node_data_tag" : html_node_data_tag,
-                "created_by" : created_by
+                "created_by" : created_by,
+                "n_annotations" : (n_annotations + 1)
             }
         }
 
@@ -141,12 +158,30 @@ class AnnotationAPI(Resource):
 
         return annotation
 
-    def delete(self, annotation_id) :
-        # 1. Delete all comments
+    def delete(self, annotation_id) :        
+        annotation = db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).first()
+        if(annotation is None) :
+            raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID")
+    
+        website_id = annotation.__dict__["website_id"]
 
-        # 2. Delete the annotation
-        # db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).delete(synchronize_session=False)
-        # db.session.commit()
+        # 1. Delete all the comments
+        db.session.query(Comment).where(Comment.annotation_id == annotation_id).delete(synchronize_session=False)
+        
+        # 2. Delete the annotations
+        db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).delete(synchronize_session=False)
+
+        # 3. Decrease n_annotations for that website_id
+        website = db.session.query(Website).filter(Website.website_id == website_id).first()
+        if website is None :
+            raise BusinessValidationError(status_code=400, error_message="No such website ID exists")
+        
+        n_annotations = website.__dict__["n_annotations"] - 1
+        website.n_annotations = n_annotations
+
+        db.session.add(website)
+
+        db.session.commit()
 
         return_value = {
             "annotation_id": annotation_id,
