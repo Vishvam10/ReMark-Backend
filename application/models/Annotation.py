@@ -1,9 +1,27 @@
+import datetime
+
+from dataclasses import dataclass
 from application.database import db
 
 from sqlalchemy.sql import func
 
+@dataclass
 class Annotation(db.Model):
     __tablename__ = "annotation"
+
+    annotation_id : str
+    annotation_name : str
+    website_id : str    
+    website_uri : str 
+    html_node_data_tag : str 
+    tags : str 
+    resolved : bool
+
+    created_at : datetime.datetime
+    updated_at : datetime.datetime
+
+    created_by : str
+    comments : list
 
     annotation_id = db.Column(db.String, unique=True, nullable=False, primary_key=True)
     annotation_name = db.Column(db.String, nullable=False)

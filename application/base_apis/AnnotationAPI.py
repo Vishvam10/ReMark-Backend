@@ -167,4 +167,4 @@ def get_all_annotations_by_website_id() :
     
     annotations = db.session.query(Annotation).filter(Annotation.website_id == website_id).all()
     
-    return annotations
+    return jsonify(annotations)
