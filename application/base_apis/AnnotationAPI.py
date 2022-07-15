@@ -1,3 +1,4 @@
+import re
 import uuid
 from venv import create
 
@@ -23,9 +24,12 @@ comment_output_fields = {
 
 annotation_output_fields = {
     "annotation_id" : fields.String,
+    "annotation_name" : fields.String,
+
     "website_id" : fields.String,
     "website_uri" : fields.String,
 
+    "tags" : fields.String,
     "html_node_data_tag" : fields.String,
 
     "resolved" : fields.Boolean,
@@ -44,7 +48,6 @@ class AnnotationAPI(Resource):
         annotation = db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).first()
         if(annotation is None) :
             raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID")
-        print("******************************************* ANNOTATION *******************************************", annotation)
         return annotation
 
     def post(self):
@@ -89,41 +92,53 @@ class AnnotationAPI(Resource):
         }
 
         return jsonify(return_value)
-
+    
     @marshal_with(annotation_output_fields)
     def put(self, annotation_id) :
         data = request.json
-
-        user_id = data["user_id"]
-        content = data["content"]
-        html_content = data["html_content"]
-        tags = data["tags"]
-
-        if user_id is None or user_id == "":
-            raise BusinessValidationError(
-                status_code=400, error_message="User ID is required")
-        if content is None or content == "":
-            raise BusinessValidationError(
-                status_code=400, error_message="Content is required")
-        if html_content is None or html_content == "":
-            raise BusinessValidationError(
-                status_code=400, error_message="HTML content is required")
-
+        # INDICATOR VARIABLES
+        action_type = data["action_type"].split(",")
         annotation = db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).first()
-        user = db.session.query(User).filter(User.user_id == user_id).first()
         
-        if(annotation is None):
-            raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID or no such annotation exists")
-        if(user is None):
-            raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID or no such annotation exists")
+        if(len(action_type) > 3) :
+            raise BusinessValidationError(status_code=400, error_message="Invalid action types")
 
-        annotation.content = content
-        annotation.html_content = html_content
-        annotation.tags = tags
-        annotation.modified_by = user_id
+        if annotation is None :
+            raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID")
+        
+        if("edit_name" in action_type or "edit_tags" in action_type or "edit_resolved" in action_type) :
+            
 
-        db.session.add(annotation)
-        db.session.commit()
+            if("edit_name" in action_type) :
+                new_name = data["new_name"] 
+
+                if new_name is None or new_name == "" :
+                    raise BusinessValidationError(status_code=400, error_message="Annotation name can not be empty")
+
+                annotation.annotation_name = new_name
+
+            
+            if("edit_tags" in action_type) :
+                new_tags = data["new_tags"]
+                print("********************************** NEW TAGS **********************************", new_tags)
+
+                annotation.tags = new_tags
+                db.session.add(annotation)
+                db.session.commit()
+            
+            if("edit_resolved" in action_type) :
+                new_resolved = data["new_resolved"]
+                if(new_resolved == True or new_resolved == False) :
+                    annotation.resolved = new_resolved
+                    db.session.add(annotation)
+                    db.session.commit()
+                else :
+                    raise BusinessValidationError(status_code=400, error_message="Invalid value for boolean variable : resolved")
+
+
+        else :
+            raise BusinessValidationError(status_code=400, error_message="Invalid action type")
+
         return annotation
 
     def delete(self, annotation_id) :
@@ -143,24 +158,13 @@ class AnnotationAPI(Resource):
 
 
 @app.route('/api/annotation/all', methods=["GET"])
-def get_all_annotations() :
-    annotations = db.session.query(User).all()
-    data = []
-    for u in annotations : 
-        data.append(
-            {
-                "annotation_id": u.__dict__["annotation_id"], 
-                "content" : u.__dict__["content"],
-                "html_content": u.__dict__["html_content"],
-                "parent_node": u.__dict__["parent_node"],
-                "tags": u.__dict__["tags"],
-                "upvotes": u.__dict__["upvotes"],
-                "downvotes": u.__dict__["downvotes"],
-                "resolved": u.__dict__["resolved"],
-                "mod_req": u.__dict__["mod_req"],
-            }
-        )
-    return_value = {
-        "data" : data
-    }
-    return jsonify(return_value)
+def get_all_annotations_by_website_id() :
+    args = request.args
+    website_id = args.get("website_id")
+    website = db.session.query(Website).filter(Website.website_id == website_id).first()
+    if(website is None) :
+        raise BusinessValidationError(status_code=400, error_message="Invalid website ID")
+    
+    annotations = db.session.query(Annotation).filter(Annotation.website_id == website_id).all()
+    
+    return annotations
