@@ -1,3 +1,4 @@
+from multiprocessing import synchronize
 from application.utils.validation import BusinessValidationError
 from application.utils.hash import check_hashed_password, check_hashed_password, create_hashed_password, generate_random_id
 
@@ -10,6 +11,9 @@ from flask import jsonify, request
 from flask import current_app as app
 
 from application.models.User import User
+from application.models.Annotation import Annotation
+from application.models.Comment import Comment
+from application.models.Website import Website
 
 allowed_authorities = ["admin", "user"]
 
@@ -109,37 +113,77 @@ class UserAPI(Resource):
         return user
 
     def delete(self, user_id) :
-        # 1. Delete all data
 
-        # 2. Delete the user
-        # db.session.query(User).filter(User.user_id == user_id).delete(synchronize_session=False)
-        # db.session.commit()
+        user = db.session.query(User).filter(User.user_id == user_id).first()
+        
+        if(user is None):
+            raise BusinessValidationError(status_code=400, error_message="Invalid user ID or no such user exists")
 
-        return_value = {
-            "user_id": user_id,
-            "message": "User deleted successfully",
-            "status": 200,
-        }
+        authority = user.__dict__["authority"]
 
-        return jsonify(return_value)
+        if(authority == "admin") :
+        
+            # 1. Delete all the comments of annotations
+            annotations = db.session.query(Annotation).filter(Annotation.created_by == user_id).all()
+            if(annotations is None or len(annotations) == 0) :
+                raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID or no annotations exist")
+
+            # The website_id is common for all annotations belonging to a 
+            # particular website, so we can pick it up any one the annotations
+            website_id = annotations[0].__dict__["website_id"]
+        
+            for annotation in annotations :
+                annotation_id = annotation.__dict__["annotation_id"]
+                db.session.query(Comment).where(Comment.annotation_id == annotation_id).delete(synchronize_session=False)
+
+            # 2. Delete the annotations
+            db.session.query(Annotation).where(Annotation.created_by == user_id).delete(synchronize_session=False)
+            
+            # 3. Reset n_annotations to 0 for that website_id
+            website = db.session.query(Website).filter(Website.website_id == website_id).first()
+
+            if website is None :
+                raise BusinessValidationError(status_code=400, error_message="No such website ID exists")
+            
+            n_annotations = 0
+            website.n_annotations = n_annotations
+            db.session.add(website)
+
+            # 4. Delete the user
+            db.session.query(User).where(User.user_id == user_id).delete(synchronize_session=False)
+
+            db.session.commit()
+
+            return_value = {
+                "message": "User deleted successfully",
+                "status": 200,
+            }
+
+            return jsonify(return_value)
+
+        if(authority == "user") :
+
+            # 1. Delete all the comments
+            db.session.query(Comment).where(Comment.created_by == user_id).delete(synchronize_session=False)
+
+            # 2. Delete the user
+            db.session.query(User).where(User.user_id == user_id).delete(synchronize_session=False)
+
+            db.session.commit()
+
+            return_value = {
+                "message": "User deleted successfully",
+                "status": 200,
+            }
+
+            return jsonify(return_value)
 
 
 @app.route('/api/user/all', methods=["GET"])
 def get_all_users() :
     users = db.session.query(User).all()
-    # data = []
-    # for u in users : 
-    #     data.append(
-    #         # {
-    #         #     "user_id": u.__dict__["user_id"], 
-    #         #     "username" : u.__dict__["username"],
-    #         #     "email_id": u.__dict__["email_id"]
-    #         # }
-    #         json.u.__dict__
-    #     )
-    # return_value = {
-    #     "data" : data
-    # }
+    # jsonify() works because @dataclass decorator
+    # is present in the User model
     return jsonify(users)
 
 @app.route('/api/user/update_user_preferences/<string:user_id>', methods=["GET","PUT"])
@@ -183,8 +227,7 @@ def reset_password(user_id) :
     data = request.json
     current_password = data["current_password"]
     new_password = data["new_password"]
-    
-    # print("***************** OLD PASSWORD *****************", current_password)
+
     if current_password is None or current_password == "":
         raise BusinessValidationError(
             status_code=400, error_message="Current Password is required")
@@ -215,7 +258,6 @@ def reset_password(user_id) :
     return_value = {
         "message": "Password Changed Successfully",
         "status": 204,
-        "new_password" : new_password
     }
 
     return jsonify(return_value)

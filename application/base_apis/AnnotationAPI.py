@@ -191,7 +191,6 @@ class AnnotationAPI(Resource):
 
         return jsonify(return_value)
 
-
 @app.route('/api/annotation/all', methods=["GET"])
 def get_all_annotations_by_website_id() :
     args = request.args
