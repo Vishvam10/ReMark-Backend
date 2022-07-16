@@ -28,7 +28,7 @@ user_output_fields = {
 }
 
 class UserAPI(Resource):
-    @jwt_required
+    # @jwt_required
     @marshal_with(user_output_fields)
     def get(self, user_id) :
         check_headers(request=request)
@@ -183,7 +183,7 @@ class UserAPI(Resource):
         return jsonify(return_value)
 
 
-@jwt_required
+# @jwt_required
 @app.route('/api/user/all', methods=["GET"])
 def get_all_users() :
     check_headers(request=request)

@@ -72,7 +72,7 @@ from application.base_apis.WebsiteAPI import *
 from application.base_apis.TokenAPI import *
 # from application.base_apis.AnnotationAPI import *
 
-# from application.specific_apis import token_generator
+from application.specific_apis import login
 
 api.add_resource(UserAPI, "/api/user", "/api/user/<string:user_id>")
 api.add_resource(AnnotationAPI, "/api/annotation", "/api/annotation/<string:annotation_id>")

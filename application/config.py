@@ -13,6 +13,7 @@ class Config():
     # MEDIA_FOLD = os.getcwd() + '/media'
     # MEDIA_FOLDER = os.path.join(APP_ROOT, MEDIA_FOLD)
     
+    JWT_SECRET_KEY = "s.vishvam1025!!asdf-dfhg-hjlk-wert-fwe123w$#"
     JWT_ACCESS_TOKEN_EXPIRES = 21600 # 6hrs
     
     SMTP_SERVER_HOST = "localhost"
@@ -37,6 +38,7 @@ class LocalDevelopmentConfig(Config):
     # MEDIA_FOLD = os.getcwd() + '/media'
     # MEDIA_FOLDER = os.path.join(APP_ROOT, MEDIA_FOLD)
     
+    JWT_SECRET_KEY = "s.vishvam1025!!asdf-dfhg-hjlk-wert-fwe123w$#"
     JWT_ACCESS_TOKEN_EXPIRES = 21600 # 6hrs
     SMTP_SERVER_HOST = "localhost"
     SMTP_SERVER_PORT = 25

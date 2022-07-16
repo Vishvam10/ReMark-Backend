@@ -39,55 +39,48 @@ class WebsiteAPI(Resource):
 
     @jwt_required
     def post(self):
-        check_headers(request=request)
-        data = request.json
-        website_url = data["website_url"]
-        n_annotations = 0
+        print("************************** DEBUGGING ******************************")
+        # check_headers(request=request)
+        # data = request.json
+        # website_url = data["website_url"]
+        # n_annotations = 0
 
-        admin_id = data["admin_id"]
-        admin_type = data["admin_type"]
+        # admin_id = data["admin_id"]
+        # admin_type = data["admin_type"]
 
-        if website_url is None or website_url == "":
-            raise BusinessValidationError(
-                status_code=400, error_message="Website URL is required")
-        if admin_id is None or admin_id == "":
-            raise BusinessValidationError(
-                status_code=400, error_message="Admin user ID is required")
-        if admin_type is None or admin_type == "":
-            raise BusinessValidationError(
-                status_code=400, error_message="Admin type is required")
+        # if website_url is None or website_url == "":
+        #     raise BusinessValidationError(
+        #         status_code=400, error_message="Website URL is required")
+        # if admin_id is None or admin_id == "":
+        #     raise BusinessValidationError(
+        #         status_code=400, error_message="Admin user ID is required")
+        # if admin_type is None or admin_type == "":
+        #     raise BusinessValidationError(
+        #         status_code=400, error_message="Admin type is required")
 
-        user = db.session.query(User).filter(User.user_id == admin_id).first()
+        # user = db.session.query(User).filter(User.user_id == admin_id).first()
 
-        if(user is None):
-            raise BusinessValidationError(status_code=400, error_message="No such user exists")
+        # if(user is None):
+        #     raise BusinessValidationError(status_code=400, error_message="No such user exists")
         
-    
+        # if(admin_type == "BASIC") :
+        #     annotation_limit = 1000
+        # elif(admin_type == "PRO") :
+        #     annotation_limit = 10000
+        # else :
+        #     raise BusinessValidationError(status_code=400, error_message="Invalid admin type")
 
-        if(admin_type == "BASIC") :
-            annotation_limit = 1000
-        elif(admin_type == "PRO") :
-            annotation_limit = 10000
-        else :
-            raise BusinessValidationError(status_code=400, error_message="Invalid admin type")
+        # website_id = generate_random_id()
+        # website_url = get_url(website_url)
 
-        website_id = generate_random_id()
-        website_url = get_url(website_url)
+        # new_website = Website(website_id=website_id, website_url=website_url, n_annotations=n_annotations, annotation_limit=annotation_limit, admin=admin_id, admin_type=admin_type)
 
-        new_website = Website(website_id=website_id, website_url=website_url, n_annotations=n_annotations, annotation_limit=annotation_limit, admin=admin_id, admin_type=admin_type)
-
-        db.session.add(new_website)
-        db.session.commit()
+        # db.session.add(new_website)
+        # db.session.commit()
 
         return_value = {
             "message": "New Website Created",
             "status": 201,
-            "data" : {
-                "website_url": website_url,
-                "website_id": website_id,
-                "admin" : admin_id,
-                "admin_type" : admin_type
-            }
         }
 
         return jsonify(return_value)

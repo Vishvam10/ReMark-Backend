@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from application.database import db
-from application.models.User import User
 
 @dataclass
 class Website(db.Model):
