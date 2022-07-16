@@ -10,6 +10,7 @@ from application.database import db
 
 from flask_restful import fields, marshal_with
 from flask_restful import Resource
+from flask_jwt_extended import jwt_required
 from flask import jsonify, request
 
 from flask import current_app as app
@@ -25,6 +26,8 @@ website_output_fields = {
 }
 
 class WebsiteAPI(Resource):
+    
+    @jwt_required
     @marshal_with(website_output_fields)
     def get(self, website_id) :
         check_headers(request=request)
@@ -34,6 +37,7 @@ class WebsiteAPI(Resource):
 
         return website
 
+    @jwt_required
     def post(self):
         check_headers(request=request)
         data = request.json
@@ -88,6 +92,7 @@ class WebsiteAPI(Resource):
 
         return jsonify(return_value)
 
+    @jwt_required
     def delete(self, website_id) :
         check_headers(request=request)
         website = db.session.query(Website).filter(Website.website_id == website_id).first()
@@ -106,6 +111,7 @@ class WebsiteAPI(Resource):
         return jsonify(return_value)
 
 
+@jwt_required
 @app.route('/api/website/all', methods=["GET"])
 def get_all_websites() :
     check_headers(request=request)

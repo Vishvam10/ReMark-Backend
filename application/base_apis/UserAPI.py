@@ -5,6 +5,7 @@ from application.database import db
 
 from flask_restful import fields, marshal_with
 from flask_restful import Resource
+from flask_jwt_extended import jwt_required
 from flask import jsonify, request
 
 from flask import current_app as app
@@ -27,6 +28,7 @@ user_output_fields = {
 }
 
 class UserAPI(Resource):
+    @jwt_required
     @marshal_with(user_output_fields)
     def get(self, user_id) :
         check_headers(request=request)
@@ -34,7 +36,6 @@ class UserAPI(Resource):
         return user
 
     def post(self):
-        check_headers(request=request)
         ID = generate_random_id()
         data = request.json
         email_id = data["email_id"]
@@ -81,6 +82,7 @@ class UserAPI(Resource):
 
         return jsonify(return_value)
 
+    @jwt_required
     @marshal_with(user_output_fields)
     def put(self, user_id) :
         check_headers(request=request)
@@ -114,6 +116,7 @@ class UserAPI(Resource):
         db.session.commit()
         return user
 
+    @jwt_required
     def delete(self, user_id) :
         check_headers(request=request)
         user = db.session.query(User).filter(User.user_id == user_id).first()
@@ -127,16 +130,14 @@ class UserAPI(Resource):
         
             # 1. Delete all the comments of annotations
             annotations = db.session.query(Annotation).filter(Annotation.created_by == user_id).all()
-            if(annotations is None or len(annotations) == 0) :
-                raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID or no annotations exist")
 
             # The website_id is common for all annotations belonging to a 
             # particular website, so we can pick it up any one the annotations
             website_id = annotations[0].__dict__["website_id"]
-        
-            for annotation in annotations :
-                annotation_id = annotation.__dict__["annotation_id"]
-                db.session.query(Comment).where(Comment.annotation_id == annotation_id).delete(synchronize_session=False)
+            if(len(annotation) != 0) :
+                for annotation in annotations :
+                    annotation_id = annotation.__dict__["annotation_id"]
+                    db.session.query(Comment).where(Comment.annotation_id == annotation_id).delete(synchronize_session=False)
 
             # 2. Delete the annotations
             db.session.query(Annotation).where(Annotation.created_by == user_id).delete(synchronize_session=False)
@@ -182,6 +183,7 @@ class UserAPI(Resource):
         return jsonify(return_value)
 
 
+@jwt_required
 @app.route('/api/user/all', methods=["GET"])
 def get_all_users() :
     check_headers(request=request)
@@ -226,6 +228,7 @@ def user_preferences(user_id) :
 
         return jsonify(return_value)
 
+@jwt_required
 @app.route('/api/password_reset/<string:user_id>', methods=["POST"])
 def reset_password(user_id) :
     check_headers(request=request)

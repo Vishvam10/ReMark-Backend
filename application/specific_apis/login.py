@@ -1,7 +1,6 @@
 from flask import request
 from application.models import *
 from application.database import db
-from flask_jwt_extended import jwt_required
 from flask_jwt_extended import create_access_token
 from flask import current_app as app
 import bcrypt

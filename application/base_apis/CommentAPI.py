@@ -10,11 +10,13 @@ from application.utils.check_headers import check_headers
 from application.database import db
 
 from flask_restful import Resource
+from flask_jwt_extended import jwt_required
 from flask import jsonify, request
 
 
 class CommentAPI(Resource):
     
+    @jwt_required
     def get(self, annotation_id) :
         check_headers(request=request)
         annotation = db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).first()
@@ -30,6 +32,7 @@ class CommentAPI(Resource):
         }
         return jsonify(return_value)
 
+    @jwt_required
     def post(self):
         check_headers(request=request)
 
@@ -77,6 +80,7 @@ class CommentAPI(Resource):
 
         return jsonify(return_value)
 
+    @jwt_required
     def put(self):       
         check_headers(request=request)
 
@@ -128,6 +132,7 @@ class CommentAPI(Resource):
 
         return jsonify(return_value)
 
+    @jwt_required
     def delete(self, annotation_id) :
         check_headers(request=request)
 

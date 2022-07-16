@@ -1,6 +1,4 @@
-import re
 import uuid
-from venv import create
 
 from application.models.Annotation import Annotation
 from application.models.Comment import Comment 
@@ -13,6 +11,7 @@ from application.database import db
 
 from flask_restful import fields, marshal_with
 from flask_restful import Resource
+from flask_jwt_extended import jwt_required
 from flask import jsonify, request
 
 from flask import current_app as app
@@ -44,6 +43,7 @@ annotation_output_fields = {
 }
 
 class AnnotationAPI(Resource):
+    @jwt_required
     @marshal_with(annotation_output_fields)
     def get(self, annotation_id) :
         check_headers(request=request)
@@ -53,6 +53,7 @@ class AnnotationAPI(Resource):
             raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID")
         return annotation
 
+    @jwt_required
     def post(self):
         check_headers(request=request)
 
@@ -115,6 +116,7 @@ class AnnotationAPI(Resource):
 
         return jsonify(return_value)
     
+    @jwt_required
     @marshal_with(annotation_output_fields)
     def put(self, annotation_id) :
         check_headers(request=request)
@@ -165,6 +167,7 @@ class AnnotationAPI(Resource):
 
         return annotation
 
+    @jwt_required
     def delete(self, annotation_id) :  
         check_headers(request=request)
       
@@ -200,6 +203,7 @@ class AnnotationAPI(Resource):
 
         return jsonify(return_value)
 
+@jwt_required
 @app.route('/api/annotation/all', methods=["GET"])
 def get_all_annotations_by_website_id() :
     check_headers(request=request)

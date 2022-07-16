@@ -15,7 +15,7 @@ from application.models.Website import *
 from flask_cors import CORS
 # from flask_caching import Cache
 
-# from flask_jwt_extended import JWTManager
+from flask_jwt_extended import JWTManager
 # from waitress import serve
 
 app = None
@@ -29,8 +29,8 @@ def create_app() :
     app = Flask(__name__)
     app.config.from_object(LocalDevelopmentConfig)
 
-    # jwt = JWTManager(app)    
-    # app.app_context().push()
+    jwt = JWTManager(app)    
+    app.app_context().push()
     
     db.init_app(app)    
     app.app_context().push()
