@@ -1,7 +1,6 @@
-from multiprocessing import synchronize
 from application.utils.validation import BusinessValidationError
 from application.utils.hash import check_hashed_password, check_hashed_password, create_hashed_password, generate_random_id
-
+from application.utils.check_headers import check_headers
 from application.database import db
 
 from flask_restful import fields, marshal_with
@@ -30,10 +29,12 @@ user_output_fields = {
 class UserAPI(Resource):
     @marshal_with(user_output_fields)
     def get(self, user_id) :
+        check_headers(request=request)
         user = db.session.query(User).filter(User.user_id == user_id).first()
         return user
 
     def post(self):
+        check_headers(request=request)
         ID = generate_random_id()
         data = request.json
         email_id = data["email_id"]
@@ -82,6 +83,7 @@ class UserAPI(Resource):
 
     @marshal_with(user_output_fields)
     def put(self, user_id) :
+        check_headers(request=request)
         data = request.json
         username = data["username"]
         email_id = data["email_id"]
@@ -113,7 +115,7 @@ class UserAPI(Resource):
         return user
 
     def delete(self, user_id) :
-
+        check_headers(request=request)
         user = db.session.query(User).filter(User.user_id == user_id).first()
         
         if(user is None):
@@ -139,15 +141,9 @@ class UserAPI(Resource):
             # 2. Delete the annotations
             db.session.query(Annotation).where(Annotation.created_by == user_id).delete(synchronize_session=False)
             
-            # 3. Reset n_annotations to 0 for that website_id
-            website = db.session.query(Website).filter(Website.website_id == website_id).first()
-
-            if website is None :
-                raise BusinessValidationError(status_code=400, error_message="No such website ID exists")
             
-            n_annotations = 0
-            website.n_annotations = n_annotations
-            db.session.add(website)
+            # 3. Delete the registeres website
+            db.session.query(Website).where(Website.website_id == website_id).delete(synchronize_session=False)
 
             # 4. Delete the user
             db.session.query(User).where(User.user_id == user_id).delete(synchronize_session=False)
@@ -155,7 +151,7 @@ class UserAPI(Resource):
             db.session.commit()
 
             return_value = {
-                "message": "User deleted successfully",
+                "message": "Admin deleted successfully",
                 "status": 200,
             }
 
@@ -177,10 +173,18 @@ class UserAPI(Resource):
             }
 
             return jsonify(return_value)
+        
+
+        return_value = {
+            "message": "Some error occured",
+            "status": 200,
+        }
+        return jsonify(return_value)
 
 
 @app.route('/api/user/all', methods=["GET"])
 def get_all_users() :
+    check_headers(request=request)
     users = db.session.query(User).all()
     # jsonify() works because the @dataclass
     # decorator is present in the User model
@@ -224,6 +228,7 @@ def user_preferences(user_id) :
 
 @app.route('/api/password_reset/<string:user_id>', methods=["POST"])
 def reset_password(user_id) :
+    check_headers(request=request)
     data = request.json
     current_password = data["current_password"]
     new_password = data["new_password"]

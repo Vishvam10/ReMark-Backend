@@ -5,6 +5,7 @@ from application.models.Annotation import Annotation
 from application.models.Comment import Comment
 
 from application.utils.validation import BusinessValidationError
+from application.utils.check_headers import check_headers
 
 from application.database import db
 
@@ -15,6 +16,7 @@ from flask import jsonify, request
 class CommentAPI(Resource):
     
     def get(self, annotation_id) :
+        check_headers(request=request)
         annotation = db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).first()
         if(annotation is None) :
             raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID")
@@ -29,6 +31,8 @@ class CommentAPI(Resource):
         return jsonify(return_value)
 
     def post(self):
+        check_headers(request=request)
+
         comment_id = str(uuid.uuid4()).replace("-", "")
         
         data = request.json
@@ -73,7 +77,9 @@ class CommentAPI(Resource):
 
         return jsonify(return_value)
 
-    def put(self):        
+    def put(self):       
+        check_headers(request=request)
+
         data = request.json
         user_id = data["user_id"]
         comment_id = data["comment_id"]
@@ -123,6 +129,8 @@ class CommentAPI(Resource):
         return jsonify(return_value)
 
     def delete(self, annotation_id) :
+        check_headers(request=request)
+
         # (FUTURE) Delete all replies as well
 
         annotation = db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).first()

@@ -7,6 +7,7 @@ from application.models.Comment import Comment
 from application.models.Website import Website
 
 from application.utils.validation import BusinessValidationError
+from application.utils.check_headers import check_headers
 
 from application.database import db
 
@@ -45,12 +46,16 @@ annotation_output_fields = {
 class AnnotationAPI(Resource):
     @marshal_with(annotation_output_fields)
     def get(self, annotation_id) :
+        check_headers(request=request)
+
         annotation = db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).first()
         if(annotation is None) :
             raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID")
         return annotation
 
     def post(self):
+        check_headers(request=request)
+
         annotation_id = str(uuid.uuid4()).replace("-", "")
         
         data = request.json
@@ -112,6 +117,8 @@ class AnnotationAPI(Resource):
     
     @marshal_with(annotation_output_fields)
     def put(self, annotation_id) :
+        check_headers(request=request)
+
         data = request.json
         # INDICATOR VARIABLES
         action_type = data["action_type"].split(",")
@@ -158,7 +165,9 @@ class AnnotationAPI(Resource):
 
         return annotation
 
-    def delete(self, annotation_id) :        
+    def delete(self, annotation_id) :  
+        check_headers(request=request)
+      
         annotation = db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).first()
         if(annotation is None) :
             raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID")
@@ -193,6 +202,8 @@ class AnnotationAPI(Resource):
 
 @app.route('/api/annotation/all', methods=["GET"])
 def get_all_annotations_by_website_id() :
+    check_headers(request=request)
+
     args = request.args
     website_id = args.get("website_id")
     website = db.session.query(Website).filter(Website.website_id == website_id).first()

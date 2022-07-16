@@ -3,6 +3,7 @@ from application.models.Website import Website
 
 from application.utils.validation import BusinessValidationError
 from application.utils.hash import generate_random_id
+from application.utils.check_headers import check_headers
 from application.utils.url_operations import get_url
 
 from application.database import db
@@ -26,6 +27,7 @@ website_output_fields = {
 class WebsiteAPI(Resource):
     @marshal_with(website_output_fields)
     def get(self, website_id) :
+        check_headers(request=request)
         website = db.session.query(Website).filter(Website.website_id == website_id).first()
         if website is None :
             raise BusinessValidationError(status_code=400, error_message="No such website ID exists")
@@ -33,6 +35,7 @@ class WebsiteAPI(Resource):
         return website
 
     def post(self):
+        check_headers(request=request)
         data = request.json
         website_url = data["website_url"]
         n_annotations = 0
@@ -86,7 +89,7 @@ class WebsiteAPI(Resource):
         return jsonify(return_value)
 
     def delete(self, website_id) :
-        
+        check_headers(request=request)
         website = db.session.query(Website).filter(Website.website_id == website_id).first()
         if(website is None) : 
             raise BusinessValidationError(status_code=400, error_message="No such website ID exists")
@@ -105,6 +108,6 @@ class WebsiteAPI(Resource):
 
 @app.route('/api/website/all', methods=["GET"])
 def get_all_websites() :
+    check_headers(request=request)
     websites = db.session.query(Website).all()
     return jsonify(websites)
-
