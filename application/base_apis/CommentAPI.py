@@ -13,6 +13,7 @@ from flask import jsonify, request
 
 
 class CommentAPI(Resource):
+    
     def get(self, annotation_id) :
         annotation = db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).first()
         if(annotation is None) :

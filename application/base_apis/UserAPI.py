@@ -182,8 +182,8 @@ class UserAPI(Resource):
 @app.route('/api/user/all', methods=["GET"])
 def get_all_users() :
     users = db.session.query(User).all()
-    # jsonify() works because @dataclass decorator
-    # is present in the User model
+    # jsonify() works because the @dataclass
+    # decorator is present in the User model
     return jsonify(users)
 
 @app.route('/api/user/update_user_preferences/<string:user_id>', methods=["GET","PUT"])

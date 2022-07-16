@@ -7,8 +7,7 @@ from sqlalchemy.sql import func
 
 
 @dataclass
-class Comment(db.Model):
-    
+class Comment(db.Model): 
     
     comment_id : str
     annotation_id : str
