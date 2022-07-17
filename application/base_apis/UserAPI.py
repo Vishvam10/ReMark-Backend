@@ -28,7 +28,7 @@ user_output_fields = {
 }
 
 class UserAPI(Resource):
-    # @jwt_required
+    @jwt_required()
     @marshal_with(user_output_fields)
     def get(self, user_id) :
         check_headers(request=request)
@@ -82,7 +82,7 @@ class UserAPI(Resource):
 
         return jsonify(return_value)
 
-    @jwt_required
+    @jwt_required()
     @marshal_with(user_output_fields)
     def put(self, user_id) :
         check_headers(request=request)
@@ -116,7 +116,7 @@ class UserAPI(Resource):
         db.session.commit()
         return user
 
-    @jwt_required
+    @jwt_required()
     def delete(self, user_id) :
         check_headers(request=request)
         user = db.session.query(User).filter(User.user_id == user_id).first()
@@ -183,7 +183,7 @@ class UserAPI(Resource):
         return jsonify(return_value)
 
 
-# @jwt_required
+# @jwt_required()
 @app.route('/api/user/all', methods=["GET"])
 def get_all_users() :
     check_headers(request=request)
@@ -228,7 +228,7 @@ def user_preferences(user_id) :
 
         return jsonify(return_value)
 
-@jwt_required
+@jwt_required()
 @app.route('/api/password_reset/<string:user_id>', methods=["POST"])
 def reset_password(user_id) :
     check_headers(request=request)

@@ -27,7 +27,7 @@ website_output_fields = {
 
 class WebsiteAPI(Resource):
     
-    @jwt_required
+    @jwt_required()
     @marshal_with(website_output_fields)
     def get(self, website_id) :
         check_headers(request=request)
@@ -37,55 +37,66 @@ class WebsiteAPI(Resource):
 
         return website
 
-    @jwt_required
+    @jwt_required()
     def post(self):
         print("************************** DEBUGGING ******************************")
-        # check_headers(request=request)
-        # data = request.json
-        # website_url = data["website_url"]
-        # n_annotations = 0
+        check_headers(request=request)
+        data = request.json
+        website_url = data["website_url"]
+        n_annotations = 0
 
-        # admin_id = data["admin_id"]
-        # admin_type = data["admin_type"]
+        admin_id = data["admin_id"]
+        admin_type = data["admin_type"]
 
-        # if website_url is None or website_url == "":
-        #     raise BusinessValidationError(
-        #         status_code=400, error_message="Website URL is required")
-        # if admin_id is None or admin_id == "":
-        #     raise BusinessValidationError(
-        #         status_code=400, error_message="Admin user ID is required")
-        # if admin_type is None or admin_type == "":
-        #     raise BusinessValidationError(
-        #         status_code=400, error_message="Admin type is required")
+        if website_url is None or website_url == "":
+            raise BusinessValidationError(
+                status_code=400, error_message="Website URL is required")
+        if admin_id is None or admin_id == "":
+            raise BusinessValidationError(
+                status_code=400, error_message="Admin user ID is required")
+        if admin_type is None or admin_type == "":
+            raise BusinessValidationError(
+                status_code=400, error_message="Admin type is required")
 
-        # user = db.session.query(User).filter(User.user_id == admin_id).first()
+        user = db.session.query(User).filter(User.user_id == admin_id).first()
 
-        # if(user is None):
-        #     raise BusinessValidationError(status_code=400, error_message="No such user exists")
+        if(user is None):
+            raise BusinessValidationError(status_code=400, error_message="No such user exists")
         
-        # if(admin_type == "BASIC") :
-        #     annotation_limit = 1000
-        # elif(admin_type == "PRO") :
-        #     annotation_limit = 10000
-        # else :
-        #     raise BusinessValidationError(status_code=400, error_message="Invalid admin type")
+        if(admin_type == "BASIC") :
+            annotation_limit = 1000
+        elif(admin_type == "PRO") :
+            annotation_limit = 10000
+        else :
+            raise BusinessValidationError(status_code=400, error_message="Invalid admin type")
 
-        # website_id = generate_random_id()
-        # website_url = get_url(website_url)
+        website_id = generate_random_id()
+        website_url = get_url(website_url)
 
-        # new_website = Website(website_id=website_id, website_url=website_url, n_annotations=n_annotations, annotation_limit=annotation_limit, admin=admin_id, admin_type=admin_type)
+        website = db.session.query(Website).filter(Website.website_id == website_id).first()
 
-        # db.session.add(new_website)
-        # db.session.commit()
+        if(website) :
+            raise BusinessValidationError(status_code=400, error_message="Website already exists")
+
+
+        new_website = Website(website_id=website_id, website_url=website_url, n_annotations=n_annotations, annotation_limit=annotation_limit, admin=admin_id, admin_type=admin_type)
+
+        db.session.add(new_website)
+        db.session.commit()
 
         return_value = {
-            "message": "New Website Created",
-            "status": 201,
+            "message": "New website created",
+            "status": 200,
+            "data" : {
+                "user_id": admin_id,
+                "admin_type" : admin_type,
+                "website_id": website_id
+            }
         }
 
         return jsonify(return_value)
 
-    @jwt_required
+    @jwt_required()
     def delete(self, website_id) :
         check_headers(request=request)
         website = db.session.query(Website).filter(Website.website_id == website_id).first()
@@ -104,7 +115,7 @@ class WebsiteAPI(Resource):
         return jsonify(return_value)
 
 
-@jwt_required
+@jwt_required()
 @app.route('/api/website/all', methods=["GET"])
 def get_all_websites() :
     check_headers(request=request)

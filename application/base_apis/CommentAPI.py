@@ -9,30 +9,43 @@ from application.utils.check_headers import check_headers
 
 from application.database import db
 
+from flask_restful import fields, marshal_with
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required
 from flask import jsonify, request
 
+comment_output_fields = {
+    "comment_id" : fields.String,
+    "annotation_id" : fields.String,
+    "content" : fields.String,
+    "content_html" : fields.String,
+
+    "parent_node" : fields.String,
+
+    "upvotes" : fields.Integer,
+    "downvotes" : fields.Integer,
+    
+    "mod_required" : fields.Boolean,
+    
+    "created_at" : fields.DateTime,
+    "updated_at" : fields.DateTime,
+
+    "created_by" : fields.String
+}
 
 class CommentAPI(Resource):
     
-    @jwt_required
-    def get(self, annotation_id) :
+    @jwt_required()
+    @marshal_with(comment_output_fields)
+    def get(self, comment_id) :
         check_headers(request=request)
-        annotation = db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).first()
-        if(annotation is None) :
-            raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID")
+        comment = db.session.query(Comment).filter(Comment.comment_id == comment_id).first()
+        if(comment is None) :
+            raise BusinessValidationError(status_code=400, error_message="Invalid comment ID")
 
-        return_value = {
-            "message": "New Comment Created",
-            "status": 201,
-            "data" : {
-                "comments" : annotation.comments
-            }
-        }
-        return jsonify(return_value)
+        return comment
 
-    @jwt_required
+    @jwt_required()
     def post(self):
         check_headers(request=request)
 
@@ -80,7 +93,8 @@ class CommentAPI(Resource):
 
         return jsonify(return_value)
 
-    @jwt_required
+    @jwt_required()
+    @marshal_with(comment_output_fields)
     def put(self):       
         check_headers(request=request)
 
@@ -120,34 +134,24 @@ class CommentAPI(Resource):
         db.session.add(comment)
         db.session.commit()
 
-        return_value = {
-            "message": "Comment Edited",
-            "status": 200,
-            "data" : {
-                "created_by": user_id,
-                "new_content" : new_content,
-                "new_content_html" : new_content_html,
-            }
-        }
+        return comment
 
-        return jsonify(return_value)
-
-    @jwt_required
-    def delete(self, annotation_id) :
+    @jwt_required()
+    def delete(self, comment_id) :
         check_headers(request=request)
 
         # (FUTURE) Delete all replies as well
 
-        annotation = db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).first()
-        if(annotation is None) :
-            raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID")
+        comment = db.session.query(Comment).filter(Comment.comment_id == comment_id).first()
+        if(comment is None) :
+            raise BusinessValidationError(status_code=400, error_message="Invalid comment ID")
     
-        db.session.query(Comment).filter(Comment.annotation_id == annotation_id).delete(synchronize_session=False)
+        db.session.query(Comment).filter(Comment.comment_id == comment_id).delete(synchronize_session=False)
         db.session.commit()
 
         return_value = {
-            "annotation_id": annotation_id,
-            "message": "Comments deleted successfully",
+            "message": "Comment deleted successfully",
+            "comment_id": comment_id,
             "status": 200,
         }
 

@@ -76,7 +76,7 @@ from application.specific_apis import login
 
 api.add_resource(UserAPI, "/api/user", "/api/user/<string:user_id>")
 api.add_resource(AnnotationAPI, "/api/annotation", "/api/annotation/<string:annotation_id>")
-api.add_resource(CommentAPI, "/api/comment", "/api/comment/<string:annotation_id>")
+api.add_resource(CommentAPI, "/api/comment", "/api/comment/<string:comment_id>")
 api.add_resource(WebsiteAPI, "/api/website", "/api/website/<string:website_id>")
 api.add_resource(TokenAPI, "/api/token/<string:user_id>")
 

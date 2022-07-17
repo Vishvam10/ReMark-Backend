@@ -43,7 +43,7 @@ annotation_output_fields = {
 }
 
 class AnnotationAPI(Resource):
-    @jwt_required
+    @jwt_required()
     @marshal_with(annotation_output_fields)
     def get(self, annotation_id) :
         check_headers(request=request)
@@ -53,7 +53,7 @@ class AnnotationAPI(Resource):
             raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID")
         return annotation
 
-    @jwt_required
+    @jwt_required()
     def post(self):
         check_headers(request=request)
 
@@ -116,7 +116,7 @@ class AnnotationAPI(Resource):
 
         return jsonify(return_value)
     
-    @jwt_required
+    @jwt_required()
     @marshal_with(annotation_output_fields)
     def put(self, annotation_id) :
         check_headers(request=request)
@@ -167,7 +167,7 @@ class AnnotationAPI(Resource):
 
         return annotation
 
-    @jwt_required
+    @jwt_required()
     def delete(self, annotation_id) :  
         check_headers(request=request)
       
@@ -203,7 +203,7 @@ class AnnotationAPI(Resource):
 
         return jsonify(return_value)
 
-@jwt_required
+@jwt_required()
 @app.route('/api/annotation/all', methods=["GET"])
 def get_all_annotations_by_website_id() :
     check_headers(request=request)
