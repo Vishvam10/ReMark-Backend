@@ -52,19 +52,27 @@ Run the celery server ( Schedulers )
 
 # Todo
 
-- [] Debug CREATE website issue
+- [x] Debug CREATE website issue
 
 
 # Features 
 
-- [] User Login / Signup
-- [] Authentication and Authorization using JWT
+- [x] User Login / Signup
+- [x] Authentication and Authorization using JWT
 - [] Admin Dashboard
 - [x] Annotation Management
 - [x] Comment Management
-- [] Using webhooks for sending emails and SMS notifications and reminders
 - [] Import and Export as Excel / CSV Jobs
 - [] Pricing Options
+
+# Optional Featues (May be added in the future)
+
+($P_i$ stands for priority and $P_1 > P_2 > ... P_n$)
+
+
+- ($P_1$) Using webhooks for sending emails and SMS notifications
+- ($P_2$) Nested comments
+- ($P_2$) Groups and IAM for organizations
 
 
 # Specifications
@@ -83,8 +91,14 @@ Run the celery server ( Schedulers )
         created_at : datetime.datetime
         modified_at : datetime.datetime
     }
-
     ```
+-  ```
+    TOKEN {
+      user_id : str
+      api_key : str
+    }
+    ```
+
 -  ```
     WEBSITE {
         website_id : str
@@ -94,7 +108,6 @@ Run the celery server ( Schedulers )
         n_annotations : int
         annotation_limit : int
     }
-
    ```
 -  ```
     ANNOTATION {
@@ -132,7 +145,6 @@ Run the celery server ( Schedulers )
 
         created_by : str
     }
-
     ```
 
 ### API Documentation :
