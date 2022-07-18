@@ -53,13 +53,13 @@ Run the celery server ( Schedulers )
 # Todo
 
 - [x] Debug CREATE website issue
-
+- [] Create `User Preference` model
 
 # Features 
 
 - [x] User Login / Signup
 - [x] Authentication and Authorization using JWT
-- [] Admin Dashboard
+- [x] Admin Dashboard
 - [x] Annotation Management
 - [x] Comment Management
 - [] Import and Export as Excel / CSV Jobs
