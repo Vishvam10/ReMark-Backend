@@ -14,9 +14,11 @@ from application.utils.check_headers import check_headers
 
 @app.route("/api/login", methods=["POST"])
 def login():
-    check_headers(request=request)
-
     data = request.json
+    authority = data["authority"]
+    if(authority == "user") :
+        check_headers(request=request)
+    
     username = data["username"]
     password = data["password"]
     user = db.session.query(User).filter(User.username == username).first()
