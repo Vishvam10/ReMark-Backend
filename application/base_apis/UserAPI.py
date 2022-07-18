@@ -1,5 +1,5 @@
 from application.utils.validation import BusinessValidationError
-from application.utils.hash import check_hashed_password, check_hashed_password, create_hashed_password, generate_random_id
+from application.utils.hash import check_hashed_password, check_hashed_password, create_hashed_password, generate_random_id, generate_api_key
 from application.utils.check_headers import check_headers
 from application.database import db
 
@@ -11,6 +11,7 @@ from flask import jsonify, request
 from flask import current_app as app
 
 from application.models.User import User
+from application.models.Token import Token
 from application.models.Annotation import Annotation
 from application.models.Comment import Comment
 from application.models.Website import Website
@@ -31,7 +32,6 @@ class UserAPI(Resource):
     @jwt_required()
     @marshal_with(user_output_fields)
     def get(self, user_id) :
-        check_headers(request=request)
         user = db.session.query(User).filter(User.user_id == user_id).first()
         return user
 
@@ -69,14 +69,29 @@ class UserAPI(Resource):
         new_user = User(user_id=ID, username=username, password=hashed_password, email_id=email_id, authority=authority, bio=bio)
 
         db.session.add(new_user)
+
+        if authority == "admin" :
+
+            # Create API_KEY for the admin - This 
+            # is common across all the websites that
+            # the admin creates
+            token = db.session.query(Token).filter(Token.user_id == ID).first()
+
+            if token :
+                raise BusinessValidationError(status_code=400, error_message="Token already exists")
+
+            api_key = generate_api_key(32)
+            new_token = Token(user_id=ID, api_key=api_key)
+            db.session.add(new_token)
+
         db.session.commit()
 
         return_value = {
-            "message": "New User Created",
+            "message": f'New {authority} created',
             "status": 201,
             "data" : {
                 "user_id": ID,
-                "user_name": username,
+                "user_name": username
             }
         }
 

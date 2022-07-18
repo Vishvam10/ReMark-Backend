@@ -39,7 +39,6 @@ class WebsiteAPI(Resource):
 
     @jwt_required()
     def post(self):
-        print("************************** DEBUGGING ******************************")
         check_headers(request=request)
         data = request.json
         website_url = data["website_url"]
@@ -115,9 +114,15 @@ class WebsiteAPI(Resource):
         return jsonify(return_value)
 
 
-@jwt_required()
-@app.route('/api/website/all', methods=["GET"])
-def get_all_websites() :
+@jwt_required() 
+@app.route('/api/website/all/<string:user_id>', methods=["GET"])
+def get_all_websites(user_id) :
     check_headers(request=request)
-    websites = db.session.query(Website).all()
+
+    user = db.session.query(User).filter(User.user_id == user_id).first()
+
+    if(user is None):
+        raise BusinessValidationError(status_code=400, error_message="No such user exists")
+
+    websites = db.session.query(Website).filter(Website.admin == user_id).all()
     return jsonify(websites)
