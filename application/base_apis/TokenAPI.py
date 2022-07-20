@@ -5,6 +5,8 @@ from application.database import db
 
 from flask_restful import Resource
 from flask import jsonify
+from flask import current_app as app
+from flask_jwt_extended import jwt_required
 
 from application.models.User import User
 from application.models.Token import Token
@@ -118,4 +120,23 @@ class TokenAPI(Resource):
         }
 
         return jsonify(return_value)
+
+@jwt_required()
+@app.route('/api/token/verify/<string:api_key>', methods=["GET"])
+def verify_token(api_key) :
+    token = db.session.query(Token).filter(Token.api_key == api_key).first()
+    # jsonify() works because the @dataclass
+    # decorator is present in the User model
+    if(token is None) :          
+        raise BusinessValidationError(status_code=400, error_message="Token does not exist")
+
+    return_value = {
+        "status": 200,
+        "data" : {
+            "user_id": token.__dict__["user_id"],
+            "api_key": token.__dict__["api_key"]
+        }
+    }
+
+    return jsonify(return_value)
 
