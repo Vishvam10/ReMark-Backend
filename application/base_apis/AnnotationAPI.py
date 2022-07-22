@@ -204,12 +204,10 @@ class AnnotationAPI(Resource):
         return jsonify(return_value)
 
 @jwt_required()
-@app.route('/api/annotation/all', methods=["GET"])
-def get_all_annotations_by_website_id() :
+@app.route('/api/annotation/all/<string:website_id>', methods=["GET"])
+def get_all_annotations_by_website_id(website_id) :
     check_headers(request=request)
 
-    args = request.args
-    website_id = args.get("website_id")
     website = db.session.query(Website).filter(Website.website_id == website_id).first()
     if(website is None) :
         raise BusinessValidationError(status_code=400, error_message="Invalid website ID")

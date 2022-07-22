@@ -41,6 +41,7 @@ def login():
         "status": 200,
         "user_id": user.user_id,
         "user_name" : username,
-        "access_token": access_token
+        "access_token": access_token,
+        "user_authority" : user.authority
     }
     return jsonify(return_value)
