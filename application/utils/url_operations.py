@@ -7,6 +7,8 @@ def get_url(uri) :
         This function returns the URL (with the trailing slash) 
         from an URI
     """
+    if(uri == "127.0.0.1:5500/") :
+        return uri
     res = urlparse(uri)
     if res.scheme == "" :
         return -1

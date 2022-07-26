@@ -148,18 +148,19 @@ class UserAPI(Resource):
 
             # The website_id is common for all annotations belonging to a 
             # particular website, so we can pick it up any one the annotations
-            website_id = annotations[0].__dict__["website_id"]
-            if(len(annotation) != 0) :
-                for annotation in annotations :
-                    annotation_id = annotation.__dict__["annotation_id"]
-                    db.session.query(Comment).where(Comment.annotation_id == annotation_id).delete(synchronize_session=False)
+            if(len(annotations) != 0) :
+                website_id = annotations[0].__dict__["website_id"]
+                if(website_id) :
+                    for annotation in annotations :
+                        annotation_id = annotation.__dict__["annotation_id"]
+                        db.session.query(Comment).where(Comment.annotation_id == annotation_id).delete(synchronize_session=False)
 
-            # 2. Delete the annotations
-            db.session.query(Annotation).where(Annotation.created_by == user_id).delete(synchronize_session=False)
-            
-            
-            # 3. Delete the registeres website
-            db.session.query(Website).where(Website.website_id == website_id).delete(synchronize_session=False)
+                # 2. Delete the annotations
+                db.session.query(Annotation).where(Annotation.created_by == user_id).delete(synchronize_session=False)
+                
+                
+                # 3. Delete the registered website
+                db.session.query(Website).where(Website.website_id == website_id).delete(synchronize_session=False)
 
             # 4. Delete the user
             db.session.query(User).where(User.user_id == user_id).delete(synchronize_session=False)

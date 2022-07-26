@@ -47,8 +47,6 @@ class WebsiteAPI(Resource):
         
         raise BusinessValidationError(status_code=400, error_message="Invalid URL arguments")
         
-
-
     @jwt_required()
     def post(self):
         check_headers(request=request)
