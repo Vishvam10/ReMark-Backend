@@ -52,8 +52,10 @@ Run the celery server ( Schedulers )
 
 # Todo
 
+- [] **Change the Annotation Model** : Store the annotation by using `XPath` instead of `data-` attribute
 - [x] Debug CREATE website issue
 - [] Create `User Preference` model
+
 
 # Features 
 
@@ -63,15 +65,15 @@ Run the celery server ( Schedulers )
 - [x] Annotation Management
 - [x] Comment Management
 - [] Import and Export as Excel / CSV Jobs
-- [] Pricing Options
+- [] ~~Pricing Options~~
 
 # Optional Featues (May be added in the future)
 
 ($P_i$ stands for priority and $P_1 > P_2 > ... P_n$)
 
 
-- ($P_1$) Using webhooks for sending emails and SMS notifications
-- ($P_2$) Nested comments
+- ($P_1$) Nested comments
+- ($P_2$) Using webhooks for sending emails and SMS notifications
 - ($P_2$) Groups and IAM for organizations
 
 
