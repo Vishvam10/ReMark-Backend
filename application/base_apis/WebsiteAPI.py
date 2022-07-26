@@ -29,13 +29,25 @@ class WebsiteAPI(Resource):
     
     @jwt_required()
     @marshal_with(website_output_fields)
-    def get(self, website_id) :
+    def get(self) :
         check_headers(request=request)
-        website = db.session.query(Website).filter(Website.website_id == website_id).first()
-        if website is None :
-            raise BusinessValidationError(status_code=400, error_message="No such website ID exists")
+        data = request.args
+        if(data.get("website_id")) :
+            website_id = data.get("website_id")
+            website = db.session.query(Website).filter(Website.website_id == website_id).first()
+            if website is None :
+                raise BusinessValidationError(status_code=400, error_message="No such website ID exists")
+            return website
+        elif(data.get("website_url")) :
+            website_url = data.get("website_url")
+            website = db.session.query(Website).filter(Website.website_url == website_url).first()
+            if website is None :
+                raise BusinessValidationError(status_code=400, error_message="No such website URL exists")
+            return website
+        
+        raise BusinessValidationError(status_code=400, error_message="Invalid URL arguments")
+        
 
-        return website
 
     @jwt_required()
     def post(self):
