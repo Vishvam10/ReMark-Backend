@@ -30,7 +30,7 @@ annotation_output_fields = {
     "website_uri" : fields.String,
 
     "tags" : fields.String,
-    "html_node_data_tag" : fields.String,
+    "node_xpath" : fields.String,
 
     "resolved" : fields.Boolean,
 
@@ -65,7 +65,7 @@ class AnnotationAPI(Resource):
         website_id = data["website_id"]
         website_uri = data["website_uri"]
         created_by = data["user_id"]
-        html_node_data_tag = data["html_node_data_tag"]
+        node_xpath = data["node_xpath"]
 
         tags = data["tags"]
         resolved = False
@@ -86,12 +86,12 @@ class AnnotationAPI(Resource):
         if annotation_name is None or annotation_name == "":
             raise BusinessValidationError(
                 status_code=400, error_message="Content is required")
-        if html_node_data_tag is None or html_node_data_tag == "":
+        if node_xpath is None or node_xpath == "":
             raise BusinessValidationError(
                 status_code=400, error_message="HTML node data tag is required")
 
         # 1. Add the annotation
-        new_annotation = Annotation(annotation_id=annotation_id, annotation_name=annotation_name, website_id=website_id, website_uri=website_uri, html_node_data_tag=html_node_data_tag, tags=tags, resolved=resolved, created_by=created_by)
+        new_annotation = Annotation(annotation_id=annotation_id, annotation_name=annotation_name, website_id=website_id, website_uri=website_uri, node_xpath=node_xpath, tags=tags, resolved=resolved, created_by=created_by)
 
         db.session.add(new_annotation)
 
@@ -108,7 +108,7 @@ class AnnotationAPI(Resource):
                 "created_by": created_by,
                 "annotation_id": annotation_id,
                 "annotation_name" : annotation_name,
-                "html_node_data_tag" : html_node_data_tag,
+                "node_xpath" : node_xpath,
                 "created_by" : created_by,
                 "n_annotations" : (n_annotations + 1)
             }

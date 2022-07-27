@@ -117,7 +117,7 @@ Run the celery server ( Schedulers )
         annotation_name : str
         website_id : str    
         website_uri : str 
-        html_node_data_tag : str 
+        node_xpath : str 
         tags : str 
         resolved : bool
 

@@ -22,7 +22,7 @@ def upgrade():
     sa.Column('annotation_id', sa.String(), nullable=False),
     sa.Column('website_id', sa.String(), nullable=False),
     sa.Column('website_uri', sa.String(), nullable=False),
-    sa.Column('html_node_data_tag', sa.String(), nullable=False),
+    sa.Column('node_xpath', sa.String(), nullable=False),
     sa.Column('content', sa.String(), nullable=False),
     sa.Column('content_html', sa.String(), nullable=False),
     sa.Column('parent_node', sa.String(), nullable=True),
@@ -36,7 +36,7 @@ def upgrade():
     sa.Column('created_by', sa.String(), nullable=False),
     sa.PrimaryKeyConstraint('annotation_id'),
     sa.UniqueConstraint('annotation_id'),
-    sa.UniqueConstraint('html_node_data_tag'),
+    sa.UniqueConstraint('node_xpath'),
     sa.UniqueConstraint('website_id')
     )
     op.create_table('token',

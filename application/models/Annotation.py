@@ -13,7 +13,7 @@ class Annotation(db.Model):
     annotation_name : str
     website_id : str    
     website_uri : str 
-    html_node_data_tag : str 
+    node_xpath : str 
     tags : str 
     resolved : bool
 
@@ -36,7 +36,7 @@ class Annotation(db.Model):
     # URI changes a lot especially for SPAs
     
     website_uri = db.Column(db.String, unique=False, nullable=False)
-    html_node_data_tag = db.Column(db.String, unique=True, nullable=False)
+    node_xpath = db.Column(db.String, unique=True, nullable=False)
 
     tags = db.Column(db.String, unique=False, nullable=True)
     resolved = db.Column(db.Boolean, unique=False, default=False)
@@ -49,5 +49,5 @@ class Annotation(db.Model):
     comments = db.relationship('Comment', backref='annotation', lazy=True)
 
     def to_dict(self):
-        return dict(annotation_id=self.annotation_id, website_id=self.website_id, website_uri=self.website_uri, html_node_data_tag=self.html_node_data_tag, created_at=self.created_at, updated_at=self.updated_at, created_by=self.created_by)
+        return dict(annotation_id=self.annotation_id, website_id=self.website_id, website_uri=self.website_uri, node_xpath=self.node_xpath, created_at=self.created_at, updated_at=self.updated_at, created_by=self.created_by)
 
