@@ -20,6 +20,7 @@ comment_output_fields = {
     'comment_id': fields.String,
     'created_by': fields.String,
     'created_at': fields.String,
+    'updated_at': fields.String,
     'content_html': fields.String,
     'upvoted': fields.Integer,
     'downvotes': fields.Integer,
@@ -39,7 +40,7 @@ annotation_output_fields = {
     "resolved" : fields.Boolean,
 
     "created_at" : fields.DateTime,
-    "modified_at" : fields.DateTime, 
+    "updated_at" : fields.DateTime, 
     "created_by_id" : fields.String,
     "created_by" : fields.String,
     "modified_by_id" : fields.String,

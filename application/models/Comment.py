@@ -42,7 +42,7 @@ class Comment(db.Model):
     mod_required = db.Column(db.Boolean, unique=False, default=False)
     
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
-    updated_at = db.Column(db.DateTime(timezone=True), onupdate=func.now()) 
+    updated_at = db.Column(db.DateTime(timezone=True), onupdate=func.now(), server_default=func.now()) 
 
     created_by_id = db.Column(db.String, db.ForeignKey('user.user_id'))
     created_by = db.Column(db.String, unique=False, nullable=False)
