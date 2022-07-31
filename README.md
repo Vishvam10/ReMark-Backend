@@ -52,7 +52,8 @@ Run the celery server ( Schedulers )
 
 # Todo
 
-- [] **Change the Annotation Model** : Store the annotation by using `XPath` instead of `data-` attribute
+- [] Backref upvotes and downvotes to User
+- [x] **Change the Annotation Model** : Store the annotation by using `XPath` instead of `data-` attribute
 - [x] Debug CREATE website issue
 - [] Create `User Preference` model
 
@@ -124,7 +125,12 @@ Run the celery server ( Schedulers )
         created_at : datetime.datetime
         updated_at : datetime.datetime
 
+        created_by_id : str
         created_by : str
+        
+        modified_by_id : str
+        modified_by : str
+        
         comments : list
     }
     ```
