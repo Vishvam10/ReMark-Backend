@@ -1,6 +1,7 @@
 import datetime
 
 from dataclasses import dataclass
+
 from application.database import db
 
 from sqlalchemy.sql import func
@@ -20,7 +21,12 @@ class Annotation(db.Model):
     created_at : datetime.datetime
     updated_at : datetime.datetime
 
+    created_by_id : str
     created_by : str
+    
+    modified_by_id : str
+    modified_by : str
+    
     comments : list
 
     annotation_id = db.Column(db.String, unique=True, nullable=False, primary_key=True)
@@ -44,10 +50,14 @@ class Annotation(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), onupdate=func.now()) 
 
+    created_by_id = db.Column(db.String, db.ForeignKey('user.user_id'))
     created_by = db.Column(db.String, unique=False, nullable=False)
+
+    modified_by_id = db.Column(db.String, db.ForeignKey('user.user_id'), nullable=True)
+    modified_by = db.Column(db.String, unique=False, nullable=True)
 
     comments = db.relationship('Comment', backref='annotation', lazy=True)
 
     def to_dict(self):
-        return dict(annotation_id=self.annotation_id, website_id=self.website_id, website_uri=self.website_uri, node_xpath=self.node_xpath, created_at=self.created_at, updated_at=self.updated_at, created_by=self.created_by)
+        return dict(annotation_id=self.annotation_id, website_id=self.website_id, website_uri=self.website_uri, node_xpath=self.node_xpath, created_at=self.created_at, updated_at=self.updated_at, created_by_id=self.created_by_id, created_by=self.created_by, modified_by_id=self.modified_by_id, modified_by=self.modified_by)
 

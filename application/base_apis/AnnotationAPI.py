@@ -19,7 +19,11 @@ from flask import current_app as app
 comment_output_fields = {
     'comment_id': fields.String,
     'created_by': fields.String,
-    'content': fields.String,
+    'created_at': fields.String,
+    'content_html': fields.String,
+    'upvoted': fields.Integer,
+    'downvotes': fields.Integer,
+    'mod_required' : fields.String
 }
 
 annotation_output_fields = {
@@ -36,7 +40,9 @@ annotation_output_fields = {
 
     "created_at" : fields.DateTime,
     "modified_at" : fields.DateTime, 
+    "created_by_id" : fields.String,
     "created_by" : fields.String,
+    "modified_by_id" : fields.String,
     "modified_by" : fields.String,
 
     "comments" : fields.List(fields.Nested(comment_output_fields))
@@ -64,7 +70,8 @@ class AnnotationAPI(Resource):
         annotation_name = data["annotation_name"]
         website_id = data["website_id"]
         website_uri = data["website_uri"]
-        created_by = data["user_id"]
+        user_id = data["user_id"]
+        user_name = data["user_name"]
         node_xpath = data["node_xpath"]
 
         tags = data["tags"]
@@ -80,9 +87,12 @@ class AnnotationAPI(Resource):
         if(n_annotations + 1 > annotation_limit) :
             raise BusinessValidationError(status_code=400, error_message="Annotation limit exceeded")
 
-        if created_by is None or created_by == "":
+        if user_id is None or user_id == "":
             raise BusinessValidationError(
                 status_code=400, error_message="User ID is required")
+        if user_name is None or user_name == "":
+            raise BusinessValidationError(
+                status_code=400, error_message="Username is required")
         if annotation_name is None or annotation_name == "":
             raise BusinessValidationError(
                 status_code=400, error_message="Content is required")
@@ -91,7 +101,7 @@ class AnnotationAPI(Resource):
                 status_code=400, error_message="HTML node data tag is required")
 
         # 1. Add the annotation
-        new_annotation = Annotation(annotation_id=annotation_id, annotation_name=annotation_name, website_id=website_id, website_uri=website_uri, node_xpath=node_xpath, tags=tags, resolved=resolved, created_by=created_by)
+        new_annotation = Annotation(annotation_id=annotation_id, annotation_name=annotation_name, website_id=website_id, website_uri=website_uri, node_xpath=node_xpath, tags=tags, resolved=resolved, created_by=user_name, created_by_id=user_id)
 
         db.session.add(new_annotation)
 
@@ -105,11 +115,11 @@ class AnnotationAPI(Resource):
             "message": "New Annotation Created",
             "status": 201,
             "data" : {
-                "created_by": created_by,
+                "created_by": user_name,
+                "created_by_id": user_id,
                 "annotation_id": annotation_id,
                 "annotation_name" : annotation_name,
                 "node_xpath" : node_xpath,
-                "created_by" : created_by,
                 "n_annotations" : (n_annotations + 1)
             }
         }

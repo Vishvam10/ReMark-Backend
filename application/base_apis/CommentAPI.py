@@ -30,6 +30,7 @@ comment_output_fields = {
     "created_at" : fields.DateTime,
     "updated_at" : fields.DateTime,
 
+    "created_by_id" : fields.String,
     "created_by" : fields.String
 }
 
@@ -52,29 +53,29 @@ class CommentAPI(Resource):
         comment_id = str(uuid.uuid4()).replace("-", "")
         
         data = request.json
-        
         annotation_id = data["annotation_id"]
         content = data["content"]
         content_html = data["content_html"]
         parent_node = data["parent_node"]
-        created_by = data["created_by"]
+        user_id = data["user_id"]
+        user_name = data["user_name"]
 
         upvotes = 0
         downvotes = 0
         mod_required = False
         
-        if created_by is None or created_by == "":
+        if user_id is None or user_id == "":
             raise BusinessValidationError(
                 status_code=400, error_message="User ID is required")
+        if user_name is None or user_name == "":
+            raise BusinessValidationError(
+                status_code=400, error_message="Username is required")
         if content is None or content == "":
             raise BusinessValidationError(
                 status_code=400, error_message="Content is required")
-        if content_html is None or content_html == "":
-            raise BusinessValidationError(
-                status_code=400, error_message="HTML node data tag is required")
 
 
-        new_comment = Comment(comment_id=comment_id, annotation_id=annotation_id, content=content, content_html=content_html, parent_node=parent_node, upvotes=upvotes, downvotes=downvotes, mod_required=mod_required, created_by=created_by)
+        new_comment = Comment(comment_id=comment_id, annotation_id=annotation_id, content=content, content_html=content_html, parent_node=parent_node, upvotes=upvotes, downvotes=downvotes, mod_required=mod_required, created_by=user_name, created_by_id=user_id)
 
         db.session.add(new_comment)
         db.session.commit()
@@ -83,11 +84,11 @@ class CommentAPI(Resource):
             "message": "New Comment Created",
             "status": 201,
             "data" : {
-                "created_by": created_by,
+                "created_by_id": user_id,
+                "created_by" : user_name,
                 "comment_id": comment_id,
                 "content" : content,
                 "content_html" : content_html,
-                "created_by" : created_by
             }
         }
 
