@@ -157,7 +157,6 @@ class AnnotationAPI(Resource):
             
             if("edit_tags" in action_type) :
                 new_tags = data["new_tags"]
-                print("********************************** NEW TAGS **********************************", new_tags)
 
                 annotation.tags = new_tags
                 db.session.add(annotation)

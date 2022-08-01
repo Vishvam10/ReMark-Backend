@@ -15,17 +15,19 @@ from application.utils.check_headers import check_headers
 @app.route("/api/login", methods=["POST"])
 def login():
     data = request.json
-    authority = data["authority"]
-    if(authority == "user") :
-        check_headers(request=request)
-    
     username = data["username"]
     password = data["password"]
+    authority = data["authority"]
     user = db.session.query(User).filter(User.username == username).first()
 
     if(user is None):
         raise BusinessValidationError(
             status_code=400, error_message="Invalid username or no such user exists")
+
+    if(user.__dict__["authority"] != authority) :
+        raise BusinessValidationError(
+            status_code=400, error_message="Invalid authority")
+
 
     if(password != ""):
         hashed_password = user.password

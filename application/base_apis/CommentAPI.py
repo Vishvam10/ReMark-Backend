@@ -1,7 +1,7 @@
+import datetime
 import uuid
 
 from application.models.User import User
-from application.models.Annotation import Annotation
 from application.models.Comment import Comment
 
 from application.utils.validation import BusinessValidationError
@@ -77,6 +77,8 @@ class CommentAPI(Resource):
 
         new_comment = Comment(comment_id=comment_id, annotation_id=annotation_id, content=content, content_html=content_html, parent_node=parent_node, upvotes=upvotes, downvotes=downvotes, mod_required=mod_required, created_by=user_name, created_by_id=user_id)
 
+        now = datetime.datetime.now().strftime("%c")
+
         db.session.add(new_comment)
         db.session.commit()
 
@@ -86,9 +88,13 @@ class CommentAPI(Resource):
             "data" : {
                 "created_by_id": user_id,
                 "created_by" : user_name,
+                "created_at" : now,
                 "comment_id": comment_id,
                 "content" : content,
                 "content_html" : content_html,
+                "upvotes" : upvotes,
+                "downvotes" : downvotes,
+                "mod_required" : mod_required,
             }
         }
 
