@@ -56,7 +56,7 @@ Run the celery server ( Schedulers )
 - [x] **Change the Annotation Model** : Store the annotation by using `XPath` instead of `data-` attribute
 - [x] Debug CREATE website issue
 - [] Create `User Preference` model
-
+- [] Add a secondary field for identifying HTML node ( in case xpath fails )
 
 # Features 
 
