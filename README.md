@@ -55,7 +55,8 @@ Run the celery server ( Schedulers )
 - [x] Add upvotes and downvotes to User
 - [x] **Change the Annotation Model** : Store the annotation by using `XPath` instead of `data-` attribute
 - [x] Debug CREATE website issue
-- [] Create `User Preference` model
+- [x] Create `User Preference` model
+- [] Create defaults and basic API for user preference model
 - [] Add a secondary field for identifying HTML node ( in case xpath fails )
 
 # Features 
