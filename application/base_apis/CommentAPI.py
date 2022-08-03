@@ -14,6 +14,8 @@ from flask_restful import Resource
 from flask_jwt_extended import jwt_required
 from flask import jsonify, request
 
+from flask import current_app as app
+
 comment_output_fields = {
     "comment_id" : fields.String,
     "annotation_id" : fields.String,
@@ -136,8 +138,6 @@ class CommentAPI(Resource):
         comment.content = new_content
         comment.content_html = new_content_html
 
-        print("************************ DEBUG ************************", comment)
-
         db.session.add(comment)
         db.session.commit()
 
@@ -165,3 +165,87 @@ class CommentAPI(Resource):
         return jsonify(return_value)
 
 
+@app.route('/api/comment/vote/<string:comment_id>', methods=["GET"])
+def update_vote(comment_id) :
+    
+    data = request.json
+    action_type = data["action_type"]
+    user_id = data["user_id"]
+
+    user = db.session.query(User).filter(User.user_id == user_id).first()
+    comment = db.session.query(Comment).filter(Comment.comment_id == comment_id).first()
+
+    if(user is None) :
+        raise BusinessValidationError(status_code=400, error_message="Invalid user ID")
+
+    if(comment is None) :
+        raise BusinessValidationError(status_code=400, error_message="Invalid comment")
+
+    if(action_type == "upvote") :
+        user_upvotes = user.__dict__["upvotes"].split(",")
+        user_downvotes = user.__dict__["downvotes"].split(",")
+        
+        if(comment_id in user_upvotes) :
+            raise BusinessValidationError(status_code=400, error_message="Already upvoted")
+        
+        if(comment_id in user_downvotes) :
+            user_downvotes = user_downvotes.remove(comment_id)
+            user_downvotes = ",".join(user_downvotes)
+
+            user.downvotes = user_downvotes
+        
+        
+        user_upvotes.append(comment_id)
+        user_upvotes = ",".join(comment_id)
+
+        user.upvotes = user_upvotes
+        comment.upvotes = comment.upvotes + 1
+
+        db.session.add(comment)
+        db.session.add(user)
+        db.session.commit()
+
+        return_value = {
+            "message": "Upvoted successfully",
+            "comment_id": comment_id,
+            "status": 200,
+        }
+
+        return jsonify(return_value)
+    
+    elif (action_type == "downvote") :
+        user_upvotes = user.__dict__["upvotes"].split(",")
+        user_downvotes = user.__dict__["downvotes"].split(",")
+        
+        if(comment_id in user_downvotes) :
+            raise BusinessValidationError(status_code=400, error_message="Already downvoted")
+        
+        if(comment_id in user_upvotes) :
+            user_upvotes = user_upvotes.remove(comment_id)
+            user_upvotes = ",".join(user_upvotes)
+
+            user.upvotes = user_upvotes
+        
+        
+        user_downvotes.append(comment_id)
+        user_downvotes = ",".join(comment_id)
+
+        user.downvotes = user_downvotes
+
+        comment = db.session.query(Comment).filter(Comment.comment_id == comment_id).first()
+        comment.downvotes = comment.downvotes + 1
+
+        db.session.add(comment)
+        db.session.add(user)
+        db.session.commit()
+
+        return_value = {
+            "message": "Downvoted successfully",
+            "comment_id": comment_id,
+            "status": 200,
+        }
+
+        return jsonify(return_value)
+
+    else :
+        raise BusinessValidationError(status_code=400, error_message="Invalid action type")        
