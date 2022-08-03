@@ -29,6 +29,11 @@ class User(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     modified_at = db.Column(db.DateTime(timezone=True), onupdate=func.now())
 
+    # Comma separated strings : comment_id1, comment_id2, . . .
+    
+    upvotes = db.Column(db.String, unique=False, nullable=True)    
+    downvotes = db.Column(db.String, unique=False, nullable=True)    
+
     # def __init__(self, user_id, username, password, email_id, authority, api_key, created_at, updated_at, webhook_url, app_preferences):
     #     self.user_id = user_id
     #     self.username = username
@@ -44,5 +49,5 @@ class User(db.Model):
     #     self.webhook_url = webhook_url
     #     self.app_preferences = app_preferences
 
-    # def to_dict(self):
-    #     return dict(id=self.user_id, username=self.username, password=self.password, email_id=self.email_id, created_at=self.created_at, modified_at=self.modified_at, authority=self.authority, api_key=self.api_key)
+    def to_dict(self):
+        return dict(user_id=self.user_id, username=self.username, email_id=self.email_id, created_at=self.created_at, modified_at=self.modified_at, authority=self.authority, upvotes=self.upvotes, downvotes=self.downvotes)
