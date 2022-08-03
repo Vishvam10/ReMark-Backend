@@ -52,7 +52,7 @@ Run the celery server ( Schedulers )
 
 # Todo
 
-- [] Backref upvotes and downvotes to User
+- [x] Add upvotes and downvotes to User
 - [x] **Change the Annotation Model** : Store the annotation by using `XPath` instead of `data-` attribute
 - [x] Debug CREATE website issue
 - [] Create `User Preference` model
