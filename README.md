@@ -36,18 +36,6 @@ Run the development server
   python main.py
 ```
 
-<!-- Run the redis server
-```bash
-  redis-server
-```
-Run the celery server ( Main workers )
-```bash
-  celery -A app.celery worker -l INFO
-```
-Run the celery server ( Schedulers )
-```bash
-  celery -A app.celery beat --max-interval 1 -l info
-``` -->
 <br>
 
 # Todo
@@ -56,8 +44,8 @@ Run the celery server ( Schedulers )
 - [x] **Change the Annotation Model** : Store the annotation by using `XPath` instead of `data-` attribute
 - [x] Debug CREATE website issue
 - [x] Create `User Preference` model
-- [] Create defaults and basic API for user preference model
-- [] Add a secondary field for identifying HTML node ( in case xpath fails )
+- [ ] Create defaults and basic API for user preference model
+- [ ] Add a secondary field for identifying HTML node ( in case xpath fails )
 
 # Features 
 
@@ -66,8 +54,8 @@ Run the celery server ( Schedulers )
 - [x] Admin Dashboard
 - [x] Annotation Management
 - [x] Comment Management
-- [] Import and Export as Excel / CSV Jobs
-- [] ~~Pricing Options~~
+- [ ] Import and Export as Excel / CSV Jobs
+- [ ] ~~Pricing Options~~
 
 
 # Specifications
@@ -149,8 +137,8 @@ Run the celery server ( Schedulers )
 
 ### API Documentation :
 
-- [] Include `openapi.yaml` file
-- [] Include Insomnia API file
+- [ ] Include `openapi.yaml` file
+- [ ] Include Insomnia API file
 
 # Optional Featues (May be added in the future)
 

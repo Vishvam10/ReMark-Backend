@@ -1,10 +1,7 @@
-import datetime
-
 from dataclasses import dataclass
-from email.policy import default
 from application.database import db
 
-from sqlalchemy.sql import func
+# ONLY FOR ADMINS
 
 @dataclass
 class UserPrefence(db.Model):
@@ -17,7 +14,6 @@ class UserPrefence(db.Model):
     default_theme : str
     brand_colors : str
   
-   
     user_id = db.Column(db.String, unique=True, nullable=False, primary_key=True)
 
     show_resolved = db.Column(db.Boolean, unique=False, default=False)
