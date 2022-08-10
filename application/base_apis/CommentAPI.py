@@ -165,7 +165,7 @@ class CommentAPI(Resource):
         return jsonify(return_value)
 
 
-@app.route('/api/comment/vote/<string:comment_id>', methods=["GET"])
+@app.route('/api/comment/vote/<string:comment_id>', methods=["PUT"])
 def update_vote(comment_id) :
     
     data = request.json

@@ -45,7 +45,8 @@ Run the development server
 - [x] Debug CREATE website issue
 - [x] Create `User Preference` model
 - [ ] Create defaults and basic API for user preference model
-- [ ] Add a secondary field for identifying HTML node ( in case xpath fails )
+- [x] Add a secondary field for identifying HTML node ( in case xpath fails )
+- [ ] Fix edge cases in comment voting
 
 # Features 
 
