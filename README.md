@@ -55,7 +55,6 @@ Run the development server
 - [x] Admin Dashboard
 - [x] Annotation Management
 - [x] Comment Management
-- [ ] Import and Export as Excel / CSV Jobs
 - [ ] ~~Pricing Options~~
 
 
@@ -146,6 +145,7 @@ Run the development server
 ($P_i$ stands for priority and $P_1 > P_2 > ... P_n$)
 
 
-- ($P_1$) Nested comments
+- ($P_1$) Nested comments ( DB implementation present but need to parse it properly )
+- ($P_1$) Import and Export as Excel / CSV Jobs
 - ($P_2$) Using webhooks for sending emails and SMS notifications
 - ($P_2$) Groups and IAM for organizations
