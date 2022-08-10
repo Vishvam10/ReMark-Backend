@@ -104,12 +104,11 @@ class CommentAPI(Resource):
 
     @jwt_required()
     @marshal_with(comment_output_fields)
-    def put(self):       
+    def put(self, comment_id):       
         check_headers(request=request)
 
         data = request.json
         user_id = data["user_id"]
-        comment_id = data["comment_id"]
         
         user = db.session.query(User).filter(User.user_id == user_id).first()
 
@@ -121,8 +120,9 @@ class CommentAPI(Resource):
         if(comment is None) :
             raise BusinessValidationError(status_code=400, error_message="Invalid comment ID")
 
-        if(comment.__dict__["created_by"] != user_id) :
-            raise BusinessValidationError(status_code=409, error_message="Can not edit this comment as it is made by someone else")
+        if(comment.__dict__["created_by_id"] != user_id) :
+            error_message = "Can not edit this comment as it is made by someone else {}".format(user_id)
+            raise BusinessValidationError(status_code=409, error_message=error_message)
 
 
         new_content = data["new_content"]
@@ -131,9 +131,6 @@ class CommentAPI(Resource):
         if new_content is None or new_content == "":
             raise BusinessValidationError(
                 status_code=400, error_message="Content is required")
-        if new_content_html is None or new_content_html == "":
-            raise BusinessValidationError(
-                status_code=400, error_message="HTML node data tag is required")
 
         comment.content = new_content
         comment.content_html = new_content_html
