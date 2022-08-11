@@ -82,8 +82,6 @@ class UserApiTest(unittest.TestCase):
         self.assertEqual(r.get("error_message"), self.HEADER_MISSING_ERROR)
 
 
-
-
 if __name__ == "__main__":
     logging.basicConfig(stream=sys.stderr)
     logging.getLogger("UserApiTestLogger").setLevel(logging.DEBUG)
