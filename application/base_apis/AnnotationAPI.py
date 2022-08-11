@@ -135,15 +135,14 @@ class AnnotationAPI(Resource):
         return jsonify(return_value)
     
     @jwt_required()
-    @marshal_with(annotation_output_fields)
     def put(self, annotation_id) :
         check_headers(request=request)
-
+        
         data = request.json
         # INDICATOR VARIABLES
         action_type = data["action_type"].split(",")
         annotation = db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).first()
-        
+        message = "Annotation edited successfully !"
         if(len(action_type) > 3) :
             raise BusinessValidationError(status_code=400, error_message="Invalid action types")
 
@@ -172,6 +171,10 @@ class AnnotationAPI(Resource):
             if("edit_resolved" in action_type) :
                 new_resolved = data["new_resolved"]
                 if(new_resolved == True or new_resolved == False) :
+                    message = "Annotation unresolved successfully !"
+                    print("*********************** DEBUG ***********************", new_resolved)
+                    if(new_resolved == True) : 
+                        message = "Annotation resolved successfully !"
                     annotation.resolved = new_resolved
                     db.session.add(annotation)
                     db.session.commit()
@@ -182,7 +185,13 @@ class AnnotationAPI(Resource):
         else :
             raise BusinessValidationError(status_code=400, error_message="Invalid action type")
 
-        return annotation
+        
+        return_value = {
+            "message": message,
+            "status": 201,
+        }
+
+        return jsonify(return_value)
 
     @jwt_required()
     def delete(self, annotation_id) :  
