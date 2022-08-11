@@ -158,11 +158,13 @@ class UserAPI(Resource):
                 # 2. Delete the annotations
                 db.session.query(Annotation).where(Annotation.created_by == user_id).delete(synchronize_session=False)
                 
-                
                 # 3. Delete the registered website
                 db.session.query(Website).where(Website.website_id == website_id).delete(synchronize_session=False)
 
-            # 4. Delete the user
+            # 4. Delete the API_KEY
+            db.session.query(Token).where(Token.user_id == user_id).delete(synchronize_session=False)
+    
+            # 5. Delete the user
             db.session.query(User).where(User.user_id == user_id).delete(synchronize_session=False)
 
             db.session.commit()

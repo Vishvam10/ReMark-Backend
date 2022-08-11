@@ -1,6 +1,7 @@
 import datetime
 
 from dataclasses import dataclass
+from email.policy import default
 from application.database import db
 
 from sqlalchemy.sql import func
@@ -31,23 +32,8 @@ class User(db.Model):
 
     # Comma separated strings : comment_id1, comment_id2, . . .
     
-    upvotes = db.Column(db.String, unique=False, nullable=True)    
-    downvotes = db.Column(db.String, unique=False, nullable=True)    
-
-    # def __init__(self, user_id, username, password, email_id, authority, api_key, created_at, updated_at, webhook_url, app_preferences):
-    #     self.user_id = user_id
-    #     self.username = username
-    #     self.password = password
-    #     self.email_id = email_id
-
-    #     self.authority = authority
-    #     self.api_key = api_key
-
-    #     self.created_at = created_at
-    #     self.updated_at = updated_at
-
-    #     self.webhook_url = webhook_url
-    #     self.app_preferences = app_preferences
+    upvotes = db.Column(db.String, unique=False, nullable=True, default="none")    
+    downvotes = db.Column(db.String, unique=False, nullable=True, default="none")    
 
     def to_dict(self):
         return dict(user_id=self.user_id, username=self.username, email_id=self.email_id, created_at=self.created_at, modified_at=self.modified_at, authority=self.authority, upvotes=self.upvotes, downvotes=self.downvotes)
