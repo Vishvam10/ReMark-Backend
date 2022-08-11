@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 6c80350dc52c
+Revision ID: 4ca8ad77f5f8
 Revises: 
-Create Date: 2022-07-31 23:32:42.843415
+Create Date: 2022-08-11 10:03:04.133767
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '6c80350dc52c'
+revision = '4ca8ad77f5f8'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -34,6 +34,8 @@ def upgrade():
     sa.Column('authority', sa.String(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('modified_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('upvotes', sa.String(), nullable=True),
+    sa.Column('downvotes', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('user_id'),
     sa.UniqueConstraint('email_id'),
     sa.UniqueConstraint('password'),
@@ -57,10 +59,13 @@ def upgrade():
     sa.Column('website_id', sa.String(), nullable=False),
     sa.Column('website_uri', sa.String(), nullable=False),
     sa.Column('node_xpath', sa.String(), nullable=False),
+    sa.Column('html_id', sa.String(), nullable=True),
+    sa.Column('html_tag', sa.String(), nullable=True),
+    sa.Column('html_text_content', sa.String(), nullable=True),
     sa.Column('tags', sa.String(), nullable=True),
     sa.Column('resolved', sa.Boolean(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
-    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('created_by_id', sa.String(), nullable=True),
     sa.Column('created_by', sa.String(), nullable=False),
     sa.Column('modified_by_id', sa.String(), nullable=True),
@@ -69,7 +74,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['modified_by_id'], ['user.user_id'], ),
     sa.PrimaryKeyConstraint('annotation_id'),
     sa.UniqueConstraint('annotation_id'),
-    sa.UniqueConstraint('node_xpath')
+    sa.UniqueConstraint('html_id')
     )
     op.create_table('comment',
     sa.Column('comment_id', sa.String(), nullable=False),
@@ -81,7 +86,7 @@ def upgrade():
     sa.Column('downvotes', sa.Integer(), nullable=True),
     sa.Column('mod_required', sa.Boolean(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
-    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('created_by_id', sa.String(), nullable=True),
     sa.Column('created_by', sa.String(), nullable=False),
     sa.ForeignKeyConstraint(['annotation_id'], ['annotation.annotation_id'], ),
