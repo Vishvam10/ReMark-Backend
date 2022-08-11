@@ -174,26 +174,23 @@ def update_vote(comment_id) :
 
     if(user is None) :
         raise BusinessValidationError(status_code=400, error_message="Invalid user ID")
-
+   
     if(comment is None) :
         raise BusinessValidationError(status_code=400, error_message="Invalid comment")
 
     if(action_type == "upvote") :
-        user_upvotes = user.__dict__["upvotes"].split(",")
-        user_downvotes = user.__dict__["downvotes"].split(",")
-        
+        user_upvotes = user.__dict__["upvotes"]
+        user_downvotes = user.__dict__["downvotes"]
         if(comment_id in user_upvotes) :
             raise BusinessValidationError(status_code=400, error_message="Already upvoted")
         
         if(comment_id in user_downvotes) :
-            user_downvotes = user_downvotes.remove(comment_id)
-            user_downvotes = ",".join(user_downvotes)
+            user_downvotes = user_downvotes.replace(comment_id, "")
+            user_downvotes += "," + user_downvotes
 
             user.downvotes = user_downvotes
         
-        
-        user_upvotes.append(comment_id)
-        user_upvotes = ",".join(comment_id)
+        user_upvotes += "," + comment_id
 
         user.upvotes = user_upvotes
         comment.upvotes = comment.upvotes + 1
@@ -205,27 +202,28 @@ def update_vote(comment_id) :
         return_value = {
             "message": "Upvoted successfully",
             "comment_id": comment_id,
+            "comment_upvotes" :  comment.upvotes,
+            "comment_downvotes" :  comment.downvotes,
             "status": 200,
         }
 
         return jsonify(return_value)
     
     elif (action_type == "downvote") :
-        user_upvotes = user.__dict__["upvotes"].split(",")
-        user_downvotes = user.__dict__["downvotes"].split(",")
+        user_upvotes = user.__dict__["upvotes"]
+        user_downvotes = user.__dict__["downvotes"]
         
         if(comment_id in user_downvotes) :
             raise BusinessValidationError(status_code=400, error_message="Already downvoted")
         
         if(comment_id in user_upvotes) :
-            user_upvotes = user_upvotes.remove(comment_id)
-            user_upvotes = ",".join(user_upvotes)
+            print("************************ DEBUG ************************", user_upvotes)
+            user_upvotes = user_upvotes.replace(comment_id, "")
+            user_upvotes += "," + user_upvotes
 
-            user.upvotes = user_upvotes
+            user.upvotes = user_upvotes        
         
-        
-        user_downvotes.append(comment_id)
-        user_downvotes = ",".join(comment_id)
+        user_downvotes += "," + comment_id
 
         user.downvotes = user_downvotes
 
@@ -239,6 +237,8 @@ def update_vote(comment_id) :
         return_value = {
             "message": "Downvoted successfully",
             "comment_id": comment_id,
+            "comment_upvotes" :  comment.upvotes,
+            "comment_downvotes" :  comment.downvotes,
             "status": 200,
         }
 
