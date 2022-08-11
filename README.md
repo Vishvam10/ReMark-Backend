@@ -46,7 +46,10 @@ Run the development server
 - [x] Create `User Preference` model
 - [ ] Create defaults and basic API for user preference model
 - [x] Add a secondary field for identifying HTML node ( in case xpath fails )
-- [ ] Fix edge cases in comment voting
+- [x] Fix edge cases in comment voting
+
+- [ ] Configure logger
+- [ ] Write tests for APIs
 
 # Features 
 
