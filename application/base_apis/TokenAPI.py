@@ -1,7 +1,7 @@
 from application.utils.validation import BusinessValidationError
 from application.utils.hash import generate_api_key
 
-from application.database import db
+from application.database.database import db
 
 from flask_restful import Resource
 from flask import jsonify

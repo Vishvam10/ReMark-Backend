@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 # from application import workers
 from application.config import LocalDevelopmentConfig
 
-from application.database import db
+from application.database.database import db
 
 from application.models.User import *
 from application.models.Comment import *

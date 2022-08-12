@@ -6,7 +6,7 @@ from application.utils.hash import generate_random_id
 from application.utils.check_headers import check_headers
 from application.utils.url_operations import get_url
 
-from application.database import db
+from application.database.database import db
 
 from flask_restful import fields, marshal_with
 from flask_restful import Resource

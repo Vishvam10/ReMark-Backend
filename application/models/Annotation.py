@@ -2,7 +2,7 @@ import datetime
 
 from dataclasses import dataclass
 
-from application.database import db
+from application.database.database import db
 
 from sqlalchemy.sql import func
 

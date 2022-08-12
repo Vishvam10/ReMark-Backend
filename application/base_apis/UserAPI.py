@@ -1,7 +1,7 @@
 from application.utils.validation import BusinessValidationError
 from application.utils.hash import check_hashed_password, check_hashed_password, create_hashed_password, generate_random_id, generate_api_key
 from application.utils.check_headers import check_headers
-from application.database import db
+from application.database.database import db
 
 from flask_restful import fields, marshal_with
 from flask_restful import Resource
