@@ -196,7 +196,7 @@ class UserAPI(Resource):
 
         return_value = {
             "message": "Some error occured",
-            "status": 200,
+            "status": 500,
         }
         return jsonify(return_value)
 
