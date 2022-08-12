@@ -44,12 +44,15 @@ Run the development server
 - [x] **Change the Annotation Model** : Store the annotation by using `XPath` instead of `data-` attribute
 - [x] Debug CREATE website issue
 - [x] Create `User Preference` model
-- [ ] Create defaults and basic API for user preference model
+- [ ] Create defaults and basic API for user preference model (OPTIONAL - Handled in the frontend)
 - [x] Add a secondary field for identifying HTML node ( in case xpath fails )
 - [x] Fix edge cases in comment voting
 
-- [ ] Configure logger
-- [ ] Write tests for APIs
+- [x] Configure logger
+- [ ] Write tests for APIs :
+  - [ ] Write a common class / function for checking API_KEY headers
+  - [ ] Explore subtests for repetitive tasks
+- [ ] Write the documentation for testing
 
 # Features 
 
@@ -146,7 +149,6 @@ Run the development server
 # Optional Featues (May be added in the future)
 
 ($P_i$ stands for priority and $P_1 > P_2 > ... P_n$)
-
 
 - ($P_1$) Nested comments ( DB implementation present but need to parse it properly )
 - ($P_1$) Import and Export as Excel / CSV Jobs
