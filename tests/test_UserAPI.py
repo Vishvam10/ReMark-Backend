@@ -1,3 +1,4 @@
+from random import random
 import sys
 import unittest
 import logging
@@ -7,7 +8,6 @@ from faker import Faker
 
 fake = Faker()
 # Faker.seed(4981308123)
-fixed_name = fake.unique.first_name()
 
 class UserApiTest(unittest.TestCase):
 
@@ -22,7 +22,7 @@ class UserApiTest(unittest.TestCase):
 
     USER_DATA = {
         "email_id": email,
-        "username": first_name,
+        "username": "testing_user",
         "password": "testing123",
         "bio": "Hello World !",
         "authority": "user",
@@ -77,9 +77,12 @@ class UserApiTest(unittest.TestCase):
         logger.debug(r.get("error_message"))
     
     # GET : Get All Users Without API_KEY Header
+    @unittest.skip
     def test_get_all_user_2b(self) :
         r = requests.get(self.GET_ALL_USERS_API_URL).json()
         self.assertEqual(r.get("error_message"), self.HEADER_MISSING_ERROR)
+
+    # 
 
 
 if __name__ == "__main__":

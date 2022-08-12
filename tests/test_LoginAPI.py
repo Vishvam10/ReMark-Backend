@@ -3,12 +3,6 @@ import unittest
 import logging
 import requests
 
-from faker import Faker
-
-fake = Faker()
-# Faker.seed(4981308123)
-fixed_name = fake.unique.first_name()
-
 class TokenApiTest(unittest.TestCase):
         
     BASE_API_URL = "http://127.0.0.1:5000/api"
