@@ -1,5 +1,4 @@
 from flask import request
-from application.models import *
 from application.database.database import db
 from flask_jwt_extended import create_access_token
 from flask import current_app as app
@@ -10,7 +9,6 @@ from flask import jsonify, request
 from application.models.User import User
 
 from application.utils.validation import BusinessValidationError
-from application.utils.check_headers import check_headers
 
 @app.route("/api/login", methods=["POST"])
 def login():
@@ -29,7 +27,10 @@ def login():
             status_code=400, error_message="Invalid authority")
 
 
-    if(password != ""):
+    if(password == "" or password is None):
+        raise BusinessValidationError(
+                status_code=400, error_message="Incorrect Password")
+    else :
         hashed_password = user.password
         string_password = hashed_password.decode('utf8')
         if(not bcrypt.checkpw(password.encode('utf8'), string_password.encode('utf8'))):
