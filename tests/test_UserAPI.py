@@ -17,8 +17,7 @@ class UserApiTest(unittest.TestCase):
         
     BASE_API_URL = "http://127.0.0.1:5000/api"
     USER_API_URL = "{}/user".format(BASE_API_URL)
-
-    GET_ALL_USERS_API_URL = "{}/all".format(USER_API_URL)
+    LOGIN_API_URL = "{}/login".format(BASE_API_URL)
 
     USER_DATA = {
         "email_id": email,
@@ -36,6 +35,12 @@ class UserApiTest(unittest.TestCase):
         "authority": "admin",
     }
 
+    LOGIN_USER_DATA = {
+        "username" : USER_DATA["username"],
+        "password" : USER_DATA["password"],
+        "authority" : USER_DATA["authority"]
+    }
+
     INCORRECT_USER_DATA = []
 
     ALLOWED_ERRORS = ["Email ID is required", "Password is required", "Username is required", "Authority is incorrectly specified", "Duplicate user"]
@@ -46,36 +51,47 @@ class UserApiTest(unittest.TestCase):
         d[k] = ""
         INCORRECT_USER_DATA.append(d)
 
-
-    
     # POST : Create User
     @unittest.skip
-    def test_create_user(self):
+    def test_1_create_user(self):
         r = requests.post(self.USER_API_URL, json=self.USER_DATA).json()
         self.assertEqual(r.get("status"), 201)
 
     # POST : Create Admin
     @unittest.skip
-    def test_create_admin(self):
+    def test_2_create_admin(self):
         r = requests.post(self.USER_API_URL, json=self.ADMIN_DATA).json()
         self.assertEqual(r.get("status"), 201)
 
     # POST : Create User With Error
     @unittest.skip
-    def test_create_user_with_error(self):
+    def test_3_create_user_with_error(self):
         for data in self.INCORRECT_USER_DATA :
             r = requests.post(self.USER_API_URL, json=data).json()
             check = r.get("error_message") in self.ALLOWED_ERRORS
             self.assertEqual(check, True)
     
 
-    # GET : (FOR DEBUG ONLY) Get All Users 
-    @unittest.skip
-    def test_get_all_user(self) :
-        r = requests.get(self.GET_ALL_USERS_API_URL).json()
+    # GET : Get User Using user_id
+
+    def test_4_get_user_with_userid(self) :
+        
+        # Create the dummy user
+        r1 = requests.post(self.USER_API_URL, json=self.USER_DATA).json()
+        self.assertEqual(r1.get("status"), 201)
+
+        r2 = requests.post(self.LOGIN_API_URL, json=self.LOGIN_USER_DATA).json()
+        self.assertEqual(r2.get("status"), 200)
+        self.assertEqual(r2.get("message"), "Logged in successfully")
+
+        url = "{}/{}".format(self.USER_API_URL, r2.get("data").get("user_id"))
+        r3 = requests.get(url).json()
+
         logger = logging.getLogger("UserApiTestLogger")
-        logger.debug(r.get("error_message"))
-    
+        logger.debug(r3)
+        # self.assertEqual(r3.get("status"), 201)
+        
+
     # GET : Get All Users Without API_KEY Header
     @unittest.skip
     def test_get_all_user_2b(self) :

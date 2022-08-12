@@ -201,14 +201,19 @@ class UserAPI(Resource):
         return jsonify(return_value)
 
 
-# @jwt_required()
-@app.route('/api/user/all', methods=["GET"])
+@app.route('/api/user/all_users', methods=["GET"])
 def get_all_users() :
-    check_headers(request=request)
     users = db.session.query(User).all()
     # jsonify() works because the @dataclass
     # decorator is present in the User model
     return jsonify(users)
+
+@app.route('/api/user/all_admins', methods=["GET"])
+def get_all_admins() :
+    admins = db.session.query(User).filter(User.authority == "admin").all()
+    # jsonify() works because the @dataclass
+    # decorator is present in the User model
+    return jsonify(admins)
 
 @app.route('/api/user/update_user_preferences/<string:user_id>', methods=["GET","PUT"])
 def user_preferences(user_id) :

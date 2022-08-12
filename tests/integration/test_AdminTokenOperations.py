@@ -1,6 +1,4 @@
-from pickletools import read_long1
 import sys
-from tabnanny import check
 import unittest
 import logging
 import requests
@@ -41,7 +39,7 @@ class AdminTokenOperations(unittest.TestCase):
 
     # POST : Create New Token ( Happens Automatically When An Admin Is Created )
     
-    def test_1_create_token(self):        
+    def test_1_create_token_with_admin(self):        
 
         r1 = requests.post(self.USER_API_URL, json=self.ADMIN_DATA).json()
         
@@ -54,7 +52,7 @@ class AdminTokenOperations(unittest.TestCase):
 
     # GET : Get Token Using user_id
 
-    def test_2_get_token_using_userid(self) :
+    def test_2_get_token_with_admin(self) :
         url = "{}/{}".format(self.TOKEN_API_URL, self.__class__.TESTING_ADMIN_ID)
         r = requests.get(url).json()  
         self.assertEqual(r.get("status"), 200)
