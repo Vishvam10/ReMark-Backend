@@ -40,6 +40,7 @@ Run the development server
 
 # Todo
 
+- [ ] **Differentiate admins** : In login method, return a boolean / str indicating whether the logged in admin is actually the admin of the website ( This arises because the user for one website can be the admin for another )
 - [x] Add upvotes and downvotes to User
 - [x] **Change the Annotation Model** : Store the annotation by using `XPath` instead of `data-` attribute
 - [x] Debug CREATE website issue
