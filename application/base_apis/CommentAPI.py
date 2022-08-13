@@ -237,8 +237,6 @@ def update_vote(comment_id):
 
             user.upvotes = user_upvotes
             comment.upvotes -= 1
-            print("************************ DEBUG ************************",
-                  user_upvotes, user.upvotes)
 
         user_downvotes += "," + comment_id
         user.downvotes = user_downvotes
