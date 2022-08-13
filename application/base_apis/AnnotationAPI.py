@@ -1,7 +1,7 @@
 import uuid
 
 from application.models.Annotation import Annotation
-from application.models.Comment import Comment 
+from application.models.Comment import Comment
 from application.models.Website import Website
 
 from application.utils.validation import BusinessValidationError
@@ -24,40 +24,43 @@ comment_output_fields = {
     'content_html': fields.String,
     'upvoted': fields.Integer,
     'downvotes': fields.Integer,
-    'mod_required' : fields.String
+    'mod_required': fields.String
 }
 
 annotation_output_fields = {
-    "annotation_id" : fields.String,
-    "annotation_name" : fields.String,
+    "annotation_id": fields.String,
+    "annotation_name": fields.String,
 
-    "website_id" : fields.String,
-    "website_uri" : fields.String,
+    "website_id": fields.String,
+    "website_uri": fields.String,
 
-    "tags" : fields.String,
-    "node_xpath" : fields.String,
+    "tags": fields.String,
+    "node_xpath": fields.String,
 
-    "resolved" : fields.Boolean,
+    "resolved": fields.Boolean,
 
-    "created_at" : fields.DateTime,
-    "updated_at" : fields.DateTime, 
-    "created_by_id" : fields.String,
-    "created_by" : fields.String,
-    "modified_by_id" : fields.String,
-    "modified_by" : fields.String,
+    "created_at": fields.DateTime,
+    "updated_at": fields.DateTime,
+    "created_by_id": fields.String,
+    "created_by": fields.String,
+    "modified_by_id": fields.String,
+    "modified_by": fields.String,
 
-    "comments" : fields.List(fields.Nested(comment_output_fields))
+    "comments": fields.List(fields.Nested(comment_output_fields))
 }
+
 
 class AnnotationAPI(Resource):
     @jwt_required()
     @marshal_with(annotation_output_fields)
-    def get(self, annotation_id) :
+    def get(self, annotation_id):
         check_headers(request=request)
 
-        annotation = db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).first()
-        if(annotation is None) :
-            raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID")
+        annotation = db.session.query(Annotation).filter(
+            Annotation.annotation_id == annotation_id).first()
+        if(annotation is None):
+            raise BusinessValidationError(
+                status_code=400, error_message="Invalid annotation ID")
         return annotation
 
     @jwt_required()
@@ -65,9 +68,9 @@ class AnnotationAPI(Resource):
         check_headers(request=request)
 
         annotation_id = str(uuid.uuid4()).replace("-", "")
-        
+
         data = request.json
-        
+
         annotation_name = data["annotation_name"]
         website_id = data["website_id"]
         website_uri = data["website_uri"]
@@ -82,15 +85,18 @@ class AnnotationAPI(Resource):
         tags = data["tags"]
         resolved = False
 
-        website = db.session.query(Website).filter(Website.website_id == website_id).first()
-        if website is None :
-            raise BusinessValidationError(status_code=400, error_message="No such website ID exists")
+        website = db.session.query(Website).filter(
+            Website.website_id == website_id).first()
+        if website is None:
+            raise BusinessValidationError(
+                status_code=400, error_message="No such website ID exists")
 
         n_annotations = website.__dict__["n_annotations"]
         annotation_limit = website.__dict__["annotation_limit"]
 
-        if(n_annotations + 1 > annotation_limit) :
-            raise BusinessValidationError(status_code=400, error_message="Annotation limit exceeded")
+        if(n_annotations + 1 > annotation_limit):
+            raise BusinessValidationError(
+                status_code=400, error_message="Annotation limit exceeded")
 
         if user_id is None or user_id == "":
             raise BusinessValidationError(
@@ -109,7 +115,8 @@ class AnnotationAPI(Resource):
                 status_code=400, error_message="HTML tag is required")
 
         # 1. Add the annotation
-        new_annotation = Annotation(annotation_id=annotation_id, annotation_name=annotation_name, website_id=website_id, website_uri=website_uri, node_xpath=node_xpath, tags=tags, html_id=html_id, html_tag=html_tag, html_text_content=html_text_content, resolved=resolved, created_by=user_name, created_by_id=user_id)
+        new_annotation = Annotation(annotation_id=annotation_id, annotation_name=annotation_name, website_id=website_id, website_uri=website_uri, node_xpath=node_xpath,
+                                    tags=tags, html_id=html_id, html_tag=html_tag, html_text_content=html_text_content, resolved=resolved, created_by=user_name, created_by_id=user_id)
 
         db.session.add(new_annotation)
 
@@ -122,70 +129,73 @@ class AnnotationAPI(Resource):
         return_value = {
             "message": "New Annotation Created",
             "status": 201,
-            "data" : {
+            "data": {
                 "created_by": user_name,
                 "created_by_id": user_id,
                 "annotation_id": annotation_id,
-                "annotation_name" : annotation_name,
-                "node_xpath" : node_xpath,
-                "n_annotations" : (n_annotations + 1)
+                "annotation_name": annotation_name,
+                "node_xpath": node_xpath,
+                "n_annotations": (n_annotations + 1)
             }
         }
 
         return jsonify(return_value)
-    
+
     @jwt_required()
-    def put(self, annotation_id) :
+    def put(self, annotation_id):
         check_headers(request=request)
-        
+
         data = request.json
-        # INDICATOR VARIABLES
         action_type = data["action_type"].split(",")
-        annotation = db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).first()
+        annotation = db.session.query(Annotation).filter(
+            Annotation.annotation_id == annotation_id).first()
+
         message = "Annotation edited successfully !"
-        if(len(action_type) > 3) :
-            raise BusinessValidationError(status_code=400, error_message="Invalid action types")
+        if(len(action_type) > 3):
+            raise BusinessValidationError(
+                status_code=400, error_message="Invalid action types")
 
-        if annotation is None :
-            raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID")
-        
-        if("edit_name" in action_type or "edit_tags" in action_type or "edit_resolved" in action_type) :
-            
+        if annotation is None:
+            raise BusinessValidationError(
+                status_code=400, error_message="Invalid annotation ID")
 
-            if("edit_name" in action_type) :
-                new_name = data["new_name"] 
+        if("edit_name" in action_type or "edit_tags" in action_type or "edit_resolved" in action_type):
 
-                if new_name is None or new_name == "" :
-                    raise BusinessValidationError(status_code=400, error_message="Annotation name can not be empty")
+            if("edit_name" in action_type):
+                new_name = data["new_name"]
+
+                if new_name is None or new_name == "":
+                    raise BusinessValidationError(
+                        status_code=400, error_message="Annotation name can not be empty")
 
                 annotation.annotation_name = new_name
 
-            
-            if("edit_tags" in action_type) :
+            if("edit_tags" in action_type):
                 new_tags = data["new_tags"]
 
                 annotation.tags = new_tags
                 db.session.add(annotation)
                 db.session.commit()
-            
-            if("edit_resolved" in action_type) :
-                new_resolved = data["new_resolved"]
-                if(new_resolved == True or new_resolved == False) :
+
+            if("edit_resolved" in action_type):
+                if(annotation.resolved == True):
                     message = "Annotation unresolved successfully !"
-                    print("*********************** DEBUG ***********************", new_resolved)
-                    if(new_resolved == True) : 
-                        message = "Annotation resolved successfully !"
-                    annotation.resolved = new_resolved
+                    annotation.resolved = False
                     db.session.add(annotation)
                     db.session.commit()
-                else :
-                    raise BusinessValidationError(status_code=400, error_message="Invalid value for boolean variable : resolved")
+                elif(annotation.resolved == False):
+                    message = "Annotation resolved successfully !"
+                    annotation.resolved = True
+                    db.session.add(annotation)
+                    db.session.commit()
+                else:
+                    raise BusinessValidationError(
+                        status_code=400, error_message="Invalid value for boolean variable : resolved")
 
+        else:
+            raise BusinessValidationError(
+                status_code=400, error_message="Invalid action type")
 
-        else :
-            raise BusinessValidationError(status_code=400, error_message="Invalid action type")
-
-        
         return_value = {
             "message": message,
             "status": 201,
@@ -194,26 +204,32 @@ class AnnotationAPI(Resource):
         return jsonify(return_value)
 
     @jwt_required()
-    def delete(self, annotation_id) :  
+    def delete(self, annotation_id):
         check_headers(request=request)
-      
-        annotation = db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).first()
-        if(annotation is None) :
-            raise BusinessValidationError(status_code=400, error_message="Invalid annotation ID")
-    
+
+        annotation = db.session.query(Annotation).filter(
+            Annotation.annotation_id == annotation_id).first()
+        if(annotation is None):
+            raise BusinessValidationError(
+                status_code=400, error_message="Invalid annotation ID")
+
         website_id = annotation.__dict__["website_id"]
 
         # 1. Delete all the comments
-        db.session.query(Comment).where(Comment.annotation_id == annotation_id).delete(synchronize_session=False)
-        
+        db.session.query(Comment).where(Comment.annotation_id ==
+                                        annotation_id).delete(synchronize_session=False)
+
         # 2. Delete the annotations
-        db.session.query(Annotation).filter(Annotation.annotation_id == annotation_id).delete(synchronize_session=False)
+        db.session.query(Annotation).filter(
+            Annotation.annotation_id == annotation_id).delete(synchronize_session=False)
 
         # 3. Decrease n_annotations for that website_id
-        website = db.session.query(Website).filter(Website.website_id == website_id).first()
-        if website is None :
-            raise BusinessValidationError(status_code=400, error_message="No such website ID exists")
-        
+        website = db.session.query(Website).filter(
+            Website.website_id == website_id).first()
+        if website is None:
+            raise BusinessValidationError(
+                status_code=400, error_message="No such website ID exists")
+
         n_annotations = website.__dict__["n_annotations"] - 1
         website.n_annotations = n_annotations
 
@@ -229,15 +245,19 @@ class AnnotationAPI(Resource):
 
         return jsonify(return_value)
 
+
 @jwt_required()
 @app.route('/api/annotation/all/<string:website_id>', methods=["GET"])
-def get_all_annotations_by_website_id(website_id) :
+def get_all_annotations_by_website_id(website_id):
     check_headers(request=request)
 
-    website = db.session.query(Website).filter(Website.website_id == website_id).first()
-    if(website is None) :
-        raise BusinessValidationError(status_code=400, error_message="Invalid website ID")
-    
-    annotations = db.session.query(Annotation).filter(Annotation.website_id == website_id).all()
-    
+    website = db.session.query(Website).filter(
+        Website.website_id == website_id).first()
+    if(website is None):
+        raise BusinessValidationError(
+            status_code=400, error_message="Invalid website ID")
+
+    annotations = db.session.query(Annotation).filter(
+        Annotation.website_id == website_id).all()
+
     return jsonify(annotations)
