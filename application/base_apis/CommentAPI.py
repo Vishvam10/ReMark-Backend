@@ -191,31 +191,32 @@ def update_vote(comment_id):
         raise BusinessValidationError(
             status_code=400, error_message="Invalid comment")
 
+    user_upvotes = user.__dict__["upvotes"]
+    user_downvotes = user.__dict__["downvotes"]
+
     if(action_type == "upvote"):
-        user_upvotes = user.__dict__["upvotes"]
-        user_downvotes = user.__dict__["downvotes"]
-        message = "Upvoted Successfully"
         if(comment_id in user_upvotes):
-            message = "Upvote Removed Successfully"
-            user_upvotes = user_upvotes.replace(comment_id, "")
-            comment.upvotes = comment.upvotes - 1
-        elif(comment_id in user_downvotes):
+            raise BusinessValidationError(
+                status_code=400, error_message="Already upvoted")
+
+        if(comment_id in user_downvotes):
             user_downvotes = user_downvotes.replace(comment_id, "")
-            user_upvotes += "," + comment_id
-            comment.upvotes = comment.upvotes + 1
-            comment.downvotes = comment.downvotes - 1
-        else:
-            user_upvotes += "," + comment_id
-            comment.upvotes = comment.upvotes + 1
+            user_downvotes += "," + user_downvotes
+
+            user.downvotes = user_downvotes
+            comment.downvotes -= 1
+
+        user_upvotes += "," + comment_id
 
         user.upvotes = user_upvotes
+        comment.upvotes = comment.upvotes + 1
 
         db.session.add(comment)
         db.session.add(user)
         db.session.commit()
 
         return_value = {
-            "message": message,
+            "message": "Upvoted successfully",
             "comment_id": comment_id,
             "comment_upvotes":  comment.upvotes,
             "comment_downvotes":  comment.downvotes,
@@ -225,33 +226,30 @@ def update_vote(comment_id):
         return jsonify(return_value)
 
     elif (action_type == "downvote"):
-        user_upvotes = user.__dict__["upvotes"]
-        user_downvotes = user.__dict__["downvotes"]
-        message = "Downvoted Successfully"
+
         if(comment_id in user_downvotes):
-            message = "Downvote Removed Successfully"
-            user_downvotes = user_downvotes.replace(comment_id, "")
-            comment.downvotes = comment.downvotes - 1
-        elif(comment_id in user_upvotes):
+            raise BusinessValidationError(
+                status_code=400, error_message="Already downvoted")
+
+        if(comment_id in user_upvotes):
             user_upvotes = user_upvotes.replace(comment_id, "")
-            user_downvotes += "," + comment_id
-            comment.downvotes = comment.downvotes + 1
-            comment.upvotes = comment.upvotes - 1
-        else:
-            user_downvotes += "," + comment_id
-            comment.downvotes = comment.downvotes + 1
+            user_upvotes += "," + user_upvotes
 
+            user.upvotes = user_upvotes
+            comment.upvotes -= 1
+            print("************************ DEBUG ************************",
+                  user_upvotes, user.upvotes)
+
+        user_downvotes += "," + comment_id
         user.downvotes = user_downvotes
-
-        comment = db.session.query(Comment).filter(
-            Comment.comment_id == comment_id).first()
+        comment.downvotes = comment.downvotes + 1
 
         db.session.add(comment)
         db.session.add(user)
         db.session.commit()
 
         return_value = {
-            "message": message,
+            "message": "Downvoted successfully",
             "comment_id": comment_id,
             "comment_upvotes":  comment.upvotes,
             "comment_downvotes":  comment.downvotes,
