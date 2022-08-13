@@ -10,6 +10,7 @@ from application.models.User import User
 
 from application.utils.validation import BusinessValidationError
 
+
 @app.route("/api/login", methods=["POST"])
 def login():
     data = request.json
@@ -22,15 +23,14 @@ def login():
         raise BusinessValidationError(
             status_code=400, error_message="Invalid username or no such user exists")
 
-    if(user.__dict__["authority"] != authority) :
+    if(user.__dict__["authority"] != authority):
         raise BusinessValidationError(
             status_code=400, error_message="Invalid authority")
 
-
     if(password == "" or password is None):
         raise BusinessValidationError(
-                status_code=400, error_message="Incorrect Password")
-    else :
+            status_code=400, error_message="Incorrect Password")
+    else:
         hashed_password = user.password
         string_password = hashed_password.decode('utf8')
         if(not bcrypt.checkpw(password.encode('utf8'), string_password.encode('utf8'))):
@@ -43,8 +43,8 @@ def login():
         "message": "Logged in successfully",
         "status": 200,
         "user_id": user.user_id,
-        "user_name" : username,
+        "user_name": username,
         "access_token": access_token,
-        "user_authority" : user.authority
+        "user_authority": user.authority
     }
     return jsonify(return_value)

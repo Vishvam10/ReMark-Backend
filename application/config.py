@@ -35,8 +35,14 @@ class LocalDevelopmentConfig(Config):
 
     JWT_SECRET_KEY = "s.vishvam1025!!asdf-dfhg-hjlk-wert-fwe123w$#"
     JWT_ACCESS_TOKEN_EXPIRES = 21600 # 6hrs
-    SMTP_SERVER_HOST = "localhost"
-    SMTP_SERVER_PORT = 25
-    SENDER_ADDRESS = "vishvam@gmail.com"
-    SENDER_PASSWORD = "" 
-   
+
+class LocalTestingConfig(Config):
+    SQLITE_DB_DIR = os.path.join(basedir, "../db_directory")
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + \
+        os.path.join(SQLITE_DB_DIR, "testing_db.sqlite3")
+    DEBUG = True
+    CORS_HEADERS = "Content-Type"
+    APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+    JWT_SECRET_KEY = "hydra12512512$2141292-1231 242-2D@W!@$"
+    JWT_ACCESS_TOKEN_EXPIRES = 21600 # 6hrs

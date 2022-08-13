@@ -1,3 +1,4 @@
+import email
 from application.utils.validation import BusinessValidationError
 from application.utils.hash import check_hashed_password, check_hashed_password, create_hashed_password, generate_random_id, generate_api_key
 from application.utils.check_headers import check_headers
@@ -28,10 +29,11 @@ user_output_fields = {
     "modified_at": fields.String,
 }
 
+
 class UserAPI(Resource):
     @jwt_required()
     @marshal_with(user_output_fields)
-    def get(self, user_id) :
+    def get(self, user_id):
         user = db.session.query(User).filter(User.user_id == user_id).first()
         return user
 
@@ -53,32 +55,46 @@ class UserAPI(Resource):
         if password is None or password == "":
             raise BusinessValidationError(
                 status_code=400, error_message="Password is required")
-    
-        if authority not in allowed_authorities:
-            raise BusinessValidationError(status_code=400, error_message="Authority is incorrectly specified")
 
+        if authority not in allowed_authorities:
+            raise BusinessValidationError(
+                status_code=400, error_message="Authority is incorrectly specified")
 
         hashed_password = create_hashed_password(password)
 
         user = db.session.query(User).filter(User.username == username).first()
-        
+
         if user:
             raise BusinessValidationError(
                 status_code=400, error_message="Duplicate user")
 
-        new_user = User(user_id=ID, username=username, password=hashed_password, email_id=email_id, authority=authority, bio=bio)
+        email_check = db.session.query(User).filter(
+            User.email_id == email_id).first()
+        username_check = db.session.query(User).filter(
+            User.username == username).first()
+
+        if email_check:
+            raise BusinessValidationError(
+                status_code=400, error_message="Email already in use")
+        if username_check:
+            raise BusinessValidationError(
+                status_code=400, error_message="Username in use")
+
+        new_user = User(user_id=ID, username=username, password=hashed_password,
+                        email_id=email_id, authority=authority, bio=bio)
 
         db.session.add(new_user)
 
-        if authority == "admin" :
+        if authority == "admin":
 
-            # Create API_KEY for the admin - This 
+            # Create API_KEY for the admin - This
             # is common across all the websites that
             # the admin creates
             token = db.session.query(Token).filter(Token.user_id == ID).first()
 
-            if token :
-                raise BusinessValidationError(status_code=400, error_message="Token already exists")
+            if token:
+                raise BusinessValidationError(
+                    status_code=400, error_message="Token already exists")
 
             api_key = generate_api_key(32)
             new_token = Token(user_id=ID, api_key=api_key)
@@ -89,7 +105,7 @@ class UserAPI(Resource):
         return_value = {
             "message": f'New {authority} created',
             "status": 201,
-            "data" : {
+            "data": {
                 "user_id": ID,
                 "user_name": username
             }
@@ -99,29 +115,33 @@ class UserAPI(Resource):
 
     @jwt_required()
     @marshal_with(user_output_fields)
-    def put(self, user_id) :
+    def put(self, user_id):
         check_headers(request=request)
         data = request.json
         username = data["username"]
         email_id = data["email_id"]
         bio = data["bio"]
 
-        if(not user_id or not username or not email_id) :
-            raise BusinessValidationError(status_code=400, error_message="One or more fields are missing")
+        if(not user_id or not username or not email_id):
+            raise BusinessValidationError(
+                status_code=400, error_message="One or more fields are missing")
 
         user = db.session.query(User).filter(User.user_id == user_id).first()
-        
+
         if(user is None):
-            raise BusinessValidationError(status_code=400, error_message="Invalid user ID or no such user exists")
+            raise BusinessValidationError(
+                status_code=400, error_message="Invalid user ID or no such user exists")
 
         user_list = db.session.query(User).all()
-        
-        for u in user_list :
+
+        for u in user_list:
             ud = u.__dict__
-            if(user.username != username and ud["username"] == username) :
-                raise BusinessValidationError(status_code=400, error_message="Username already exists")
-            if(user.email_id != email_id and ud["email_id"] == email_id) :
-                raise BusinessValidationError(status_code=400, error_message="Email ID already exists")
+            if(user.username != username and ud["username"] == username):
+                raise BusinessValidationError(
+                    status_code=400, error_message="Username already exists")
+            if(user.email_id != email_id and ud["email_id"] == email_id):
+                raise BusinessValidationError(
+                    status_code=400, error_message="Email ID already exists")
 
         user.username = username
         user.email_id = email_id
@@ -132,40 +152,47 @@ class UserAPI(Resource):
         return user
 
     @jwt_required()
-    def delete(self, user_id) :
+    def delete(self, user_id):
         check_headers(request=request)
         user = db.session.query(User).filter(User.user_id == user_id).first()
-        
+
         if(user is None):
-            raise BusinessValidationError(status_code=400, error_message="Invalid user ID or no such user exists")
+            raise BusinessValidationError(
+                status_code=400, error_message="Invalid user ID or no such user exists")
 
         authority = user.__dict__["authority"]
 
-        if(authority == "admin") :
-        
-            # 1. Delete all the comments of annotations
-            annotations = db.session.query(Annotation).filter(Annotation.created_by == user_id).all()
+        if(authority == "admin"):
 
-            # The website_id is common for all annotations belonging to a 
+            # 1. Delete all the comments of annotations
+            annotations = db.session.query(Annotation).filter(
+                Annotation.created_by == user_id).all()
+
+            # The website_id is common for all annotations belonging to a
             # particular website, so we can pick it up any one the annotations
-            if(len(annotations) != 0) :
+            if(len(annotations) != 0):
                 website_id = annotations[0].__dict__["website_id"]
-                if(website_id) :
-                    for annotation in annotations :
+                if(website_id):
+                    for annotation in annotations:
                         annotation_id = annotation.__dict__["annotation_id"]
-                        db.session.query(Comment).where(Comment.annotation_id == annotation_id).delete(synchronize_session=False)
+                        db.session.query(Comment).where(
+                            Comment.annotation_id == annotation_id).delete(synchronize_session=False)
 
                 # 2. Delete the annotations
-                db.session.query(Annotation).where(Annotation.created_by == user_id).delete(synchronize_session=False)
-                
+                db.session.query(Annotation).where(
+                    Annotation.created_by == user_id).delete(synchronize_session=False)
+
                 # 3. Delete the registered website
-                db.session.query(Website).where(Website.website_id == website_id).delete(synchronize_session=False)
+                db.session.query(Website).where(
+                    Website.website_id == website_id).delete(synchronize_session=False)
 
             # 4. Delete the API_KEY
-            db.session.query(Token).where(Token.user_id == user_id).delete(synchronize_session=False)
-    
+            db.session.query(Token).where(
+                Token.user_id == user_id).delete(synchronize_session=False)
+
             # 5. Delete the user
-            db.session.query(User).where(User.user_id == user_id).delete(synchronize_session=False)
+            db.session.query(User).where(User.user_id == user_id).delete(
+                synchronize_session=False)
 
             db.session.commit()
 
@@ -176,13 +203,15 @@ class UserAPI(Resource):
 
             return jsonify(return_value)
 
-        if(authority == "user") :
+        if(authority == "user"):
 
             # 1. Delete all the comments
-            db.session.query(Comment).where(Comment.created_by == user_id).delete(synchronize_session=False)
+            db.session.query(Comment).where(
+                Comment.created_by == user_id).delete(synchronize_session=False)
 
             # 2. Delete the user
-            db.session.query(User).where(User.user_id == user_id).delete(synchronize_session=False)
+            db.session.query(User).where(User.user_id == user_id).delete(
+                synchronize_session=False)
 
             db.session.commit()
 
@@ -192,7 +221,6 @@ class UserAPI(Resource):
             }
 
             return jsonify(return_value)
-        
 
         return_value = {
             "message": "Some error occured",
@@ -202,58 +230,62 @@ class UserAPI(Resource):
 
 
 @app.route('/api/user/all_users', methods=["GET"])
-def get_all_users() :
+def get_all_users():
     users = db.session.query(User).all()
     # jsonify() works because the @dataclass
     # decorator is present in the User model
     return jsonify(users)
 
+
 @app.route('/api/user/all_admins', methods=["GET"])
-def get_all_admins() :
+def get_all_admins():
     admins = db.session.query(User).filter(User.authority == "admin").all()
     # jsonify() works because the @dataclass
     # decorator is present in the User model
     return jsonify(admins)
 
-@app.route('/api/user/update_user_preferences/<string:user_id>', methods=["GET","PUT"])
-def user_preferences(user_id) :
-    if(request.method == "GET") :
-        user = db.session.query(User).filter(User.user_id == user_id).first()    
+
+@app.route('/api/user/update_user_preferences/<string:user_id>', methods=["GET", "PUT"])
+def user_preferences(user_id):
+    if(request.method == "GET"):
+        user = db.session.query(User).filter(User.user_id == user_id).first()
         if(user is None):
-            raise BusinessValidationError(status_code=400, error_message="Invalid user ID or no such user exists")
-        
+            raise BusinessValidationError(
+                status_code=400, error_message="Invalid user ID or no such user exists")
+
         data = {
-            "webhook_url" : user.webhook_url,
-            "user_preferences" : user.user_preferences
+            "webhook_url": user.webhook_url,
+            "user_preferences": user.user_preferences
         }
         return jsonify(data)
 
-    if(request.method == "PUT") :
+    if(request.method == "PUT"):
         data = request.json
         webhook_url = data["webhook_url"]
         user_preferences = data["user_preferences"]
-        
+
         user = db.session.query(User).filter(User.user_id == user_id).first()
-            
+
         if(user is None):
-            raise BusinessValidationError(status_code=400, error_message="Invalid user ID or no such user exists")
+            raise BusinessValidationError(
+                status_code=400, error_message="Invalid user ID or no such user exists")
 
         user.webhook_url = webhook_url
         user.user_preferences = user_preferences
-        
 
         db.session.add(user)
         db.session.commit()
 
         return_value = {
-            "message" : "Updated user preferences"
+            "message": "Updated user preferences"
         }
 
         return jsonify(return_value)
 
+
 @jwt_required()
 @app.route('/api/password_reset/<string:user_id>', methods=["POST"])
-def reset_password(user_id) :
+def reset_password(user_id):
     check_headers(request=request)
     data = request.json
     current_password = data["current_password"]
@@ -265,13 +297,12 @@ def reset_password(user_id) :
     if new_password is None or new_password == "":
         raise BusinessValidationError(
             status_code=400, error_message="New Password is required")
-    
+
     user = db.session.query(User).filter(User.user_id == user_id).first()
 
-    if user is None :
+    if user is None:
         raise BusinessValidationError(
             status_code=400, error_message="No such user exists")
-
 
     hashed_password = user.password
     string_password = hashed_password.decode('utf8')
@@ -279,10 +310,10 @@ def reset_password(user_id) :
     if(not check_hashed_password(current_password, string_password)):
         raise BusinessValidationError(
             status_code=400, error_message="Incorrect Password")
-    
+
     new_hashed_password = create_hashed_password(new_password)
     user.password = new_hashed_password
-    
+
     db.session.add(user)
     db.session.commit()
 
@@ -292,4 +323,3 @@ def reset_password(user_id) :
     }
 
     return jsonify(return_value)
-
