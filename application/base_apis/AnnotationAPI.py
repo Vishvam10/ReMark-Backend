@@ -144,7 +144,7 @@ class AnnotationAPI(Resource):
     @jwt_required()
     def put(self, annotation_id):
         check_headers(request=request)
-
+    
         data = request.json
         action_type = data["action_type"].split(",")
         annotation = db.session.query(Annotation).filter(
@@ -172,10 +172,7 @@ class AnnotationAPI(Resource):
 
             if("edit_tags" in action_type):
                 new_tags = data["new_tags"]
-
                 annotation.tags = new_tags
-                db.session.add(annotation)
-                db.session.commit()
 
             if("edit_resolved" in action_type):
                 if(annotation.resolved == True):
@@ -186,22 +183,23 @@ class AnnotationAPI(Resource):
                 elif(annotation.resolved == False):
                     message = "Annotation resolved successfully !"
                     annotation.resolved = True
-                    db.session.add(annotation)
-                    db.session.commit()
                 else:
                     raise BusinessValidationError(
                         status_code=400, error_message="Invalid value for boolean variable : resolved")
+            
+            db.session.add(annotation)
+            db.session.commit()
+
+            return_value = {
+                "message": message,
+                "status": 201,
+            }
+
+            return jsonify(return_value)
 
         else:
             raise BusinessValidationError(
                 status_code=400, error_message="Invalid action type")
-
-        return_value = {
-            "message": message,
-            "status": 201,
-        }
-
-        return jsonify(return_value)
 
     @jwt_required()
     def delete(self, annotation_id):

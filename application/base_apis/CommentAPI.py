@@ -127,8 +127,7 @@ class CommentAPI(Resource):
                 status_code=400, error_message="Invalid comment ID")
 
         if(comment.__dict__["created_by_id"] != user_id):
-            error_message = "Can not edit this comment as it is made by someone else {}".format(
-                user_id)
+            error_message = "Can not edit this comment as it is made by someone else"
             raise BusinessValidationError(
                 status_code=409, error_message=error_message)
 

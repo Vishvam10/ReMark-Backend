@@ -34,7 +34,6 @@ class User(db.Model):
     modified_at = db.Column(db.DateTime(timezone=True), onupdate=func.now())
 
     # Comma separated strings : comment_id1, comment_id2, . . .
-
     upvotes = db.Column(db.String, unique=False, nullable=True, default="none")
     downvotes = db.Column(db.String, unique=False,
                           nullable=True, default="none")

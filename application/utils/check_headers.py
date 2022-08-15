@@ -15,7 +15,6 @@ def check_headers(request) :
     # (FUTURE) Logs these requests in a logfile or a table in DB
 
     if(ak is None) :
-        print("****************** DEBUG ******************", api_key, ak, request.headers["API_KEY"])
         raise BusinessValidationError(status_code=400, error_message="Invalid API_KEY")
     
     return True
