@@ -1,25 +1,54 @@
-import sys
-import logging
+import os
+import tempfile
 import pytest
-from app import create_app
 
-# logging.basicConfig(stream=sys.stderr)
-# logging.getLogger("TestUserAPILogger").setLevel(logging.DEBUG)
+from application import create_app
+from application.database.test.testing_database import get_db, init_db
+
+with open(os.path.join(os.path.dirname(__file__), 'data.sql'), 'rb') as f:
+    _data_sql = f.read().decode('utf8')
 
 
-@pytest.fixture()
+@pytest.fixture
 def app():
+    db_fd, db_path = tempfile.mkstemp()
     app, api, celery, cache = create_app(environment="testing")
-    logger = logging.getLogger("TestUserAPILogger")
-    logger.debug(app)
-    return app
+    
+    app.config["SQLALCHEMY_DATABASE_URI"] = db_path
 
+    with app.app_context():
+        init_db()
+        get_db().executescript(_data_sql)
 
-@pytest.fixture()
+    yield app
+
+    os.close(db_fd)
+
+@pytest.fixture
 def client(app):
-    return app.test_client()
+    with app.test_client() as client:
+        yield client
 
-
-@pytest.fixture()
+@pytest.fixture
 def runner(app):
     return app.test_cli_runner()
+
+# AUTH
+
+class AuthActions(object):
+
+    def __init__(self, client):
+        self._client = client
+
+    def login(self, username='test', password='test'):
+        return self._client.post(
+            '/api/login',
+            data={'username': username, 'password': password}
+        )
+
+    def logout(self):
+        return self._client.get('/auth/logout')
+
+@pytest.fixture
+def auth(client):
+    return AuthActions(client)

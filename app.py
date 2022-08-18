@@ -8,7 +8,7 @@ from application import create_app
 app, api, celery, cache = create_app()
 
 from application.specific_apis import login
-from application.specific_apis import dummy
+from application.specific_apis import fileDownload
 from application.base_apis.TokenAPI import *
 from application.base_apis.WebsiteAPI import *
 from application.base_apis.AnnotationAPI import *

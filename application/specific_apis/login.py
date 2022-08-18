@@ -1,5 +1,5 @@
 from flask import request
-from application.database.database import db
+from application.database.dev.database import db
 from flask_jwt_extended import create_access_token
 from flask import current_app as app
 import bcrypt
@@ -7,6 +7,7 @@ import bcrypt
 from flask import jsonify, request
 
 from application.models.User import User
+from application.models.Website import Website
 
 from application.utils.validation import BusinessValidationError
 
@@ -37,6 +38,13 @@ def login():
             raise BusinessValidationError(
                 status_code=400, error_message="Incorrect Password")
 
+    user_id = user.__dict__["user_id"]
+    registered_website = db.session.query(Website).filter(Website.admin == user_id).first()
+
+    is_admin_to_website = False
+    if(registered_website) :
+        is_admin_to_website = True
+
     access_token = create_access_token(identity=username)
 
     return_value = {
@@ -45,6 +53,7 @@ def login():
         "user_id": user.user_id,
         "user_name": username,
         "access_token": access_token,
-        "user_authority": user.authority
+        "user_authority": user.authority,
+        "is_admin_to_website" : is_admin_to_website
     }
     return jsonify(return_value)

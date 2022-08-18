@@ -1,8 +1,7 @@
-import email
 from application.utils.validation import BusinessValidationError
 from application.utils.hash import check_hashed_password, check_hashed_password, create_hashed_password, generate_random_id, generate_api_key
 from application.utils.check_headers import check_headers
-from application.database.database import db
+from application.database.dev.database import db
 
 from flask_restful import fields, marshal_with
 from flask_restful import Resource
@@ -276,8 +275,8 @@ def user_preferences(user_id):
 
 
 @jwt_required()
-@app.route('/api/password_reset/<string:user_id>', methods=["POST"])
-def reset_password(user_id):
+@app.route('/api/update_password/<string:user_id>', methods=["POST"])
+def update_password(user_id):
     check_headers(request=request)
     data = request.json
     current_password = data["current_password"]

@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 # from application import workers
 from application.config import LocalDevelopmentConfig, LocalTestingConfig
 
-from application.database.database import db
+from application.database.dev.database import db
 from flask_cors import CORS
 # from flask_caching import Cache
 
