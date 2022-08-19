@@ -1,3 +1,4 @@
+from application.models.UserPreference import UserPreference
 from application.utils.validation import BusinessValidationError
 from application.utils.hash import check_hashed_password, check_hashed_password, create_hashed_password, generate_random_id, generate_api_key
 from application.utils.check_headers import check_headers
@@ -98,6 +99,13 @@ class UserAPI(Resource):
             api_key = generate_api_key(32)
             new_token = Token(user_id=ID, api_key=api_key)
             db.session.add(new_token)
+
+            pref = db.session.query(UserPreference).filter(UserPreference.user_id == ID).first()
+
+            if pref is None:
+                new_pref = UserPreference(user_id=ID,show_resolved=True, show_moderated_comments=True, comments_limit_per_annotation=10, default_theme="light", brand_colors = "")
+                db.session.add(new_pref)
+
 
         db.session.commit()
 

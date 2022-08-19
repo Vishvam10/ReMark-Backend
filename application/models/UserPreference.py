@@ -4,11 +4,10 @@ from application.database.dev.database import db
 # ONLY FOR ADMINS
 
 @dataclass
-class UserPrefence(db.Model):
-    __tablename__ = "user_preference"
+class UserPreference(db.Model):
+    __tablename__ = "userpreference"
 
     user_id : str
-    show_resolved : bool
     show_moderated_comments : bool
     comments_limit_per_annotation : int
     default_theme : str
@@ -16,11 +15,10 @@ class UserPrefence(db.Model):
   
     user_id = db.Column(db.String, unique=True, nullable=False, primary_key=True)
 
-    show_resolved = db.Column(db.Boolean, unique=False, default=False)
-    show_moderated_comments = db.Column(db.Boolean, unique=False, default=False)
-    comments_limit_per_annotation = db.Column(db.Integer, unique=False, default=10)    
+    show_moderated_comments = db.Column(db.Boolean, unique=False, default=False, nullable=True)
+    comments_limit_per_annotation = db.Column(db.Integer, unique=False, default=10, nullable=True)    
 
-    default_theme = db.Column(db.String, unique=False, default="light")
+    default_theme = db.Column(db.String, unique=False, default="light", nullable=True)
 
     # This is a JSON string 
     brand_colors = db.Column(db.String, unique=False, nullable=True)
