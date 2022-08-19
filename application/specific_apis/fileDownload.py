@@ -19,6 +19,6 @@ def download_file(user_id):
             status_code=400, error_message="Only admins can download this file !")
     
     file_type = "js"
-    f = media + "\\" + "remark_v.0.1" + "." + file_type
+    f = media + "\\" + "remark.v.0.1" + "." + file_type
 
     return send_file(f, mimetype='text/javascript', attachment_filename="remark.v.0.1.js", as_attachment=True)
