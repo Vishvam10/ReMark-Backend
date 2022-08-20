@@ -1,3 +1,4 @@
+from __future__ import annotations
 import uuid
 
 from application.models.Annotation import Annotation
@@ -13,6 +14,9 @@ from flask_restful import fields, marshal_with
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required
 from flask import jsonify, request
+from flask import Blueprint
+
+annotation_extras = Blueprint("annotation_extras", __name__)
 
 from flask import current_app as app
 
@@ -48,7 +52,6 @@ annotation_output_fields = {
 
     "comments": fields.List(fields.Nested(comment_output_fields))
 }
-
 
 class AnnotationAPI(Resource):
     @jwt_required()
