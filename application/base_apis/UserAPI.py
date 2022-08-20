@@ -64,7 +64,6 @@ class UserAPI(Resource):
         hashed_password = create_hashed_password(password)
 
         user = db.session.query(User).filter(User.username == username).first()
-
         if user:
             raise BusinessValidationError(
                 status_code=400, error_message="Duplicate user")
