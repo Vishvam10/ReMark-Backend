@@ -3,6 +3,7 @@ import json
 
 from application.database.database import db
 from application.models.User import User
+from application.models.Token import Token
 
 from faker import Faker
 fake = Faker()
@@ -46,6 +47,12 @@ def create_dummy_user(client) :
     }
     res = client.post("/api/user", json=STATIC_USER_DATA)
     return STATIC_USER_DATA
+
+def test_0_db_cleanup(app) :
+    with app.app_context() :
+        db.session.query(User).delete()
+        db.session.query(Token).delete()
+        db.session.commit()
 
 def test_1a_create_new_user(client) :   
     res = json.loads(client.post(USER_API_URL, json=USER_DATA).data)
@@ -124,6 +131,7 @@ def test_3b_get_admin_and_store_api_key(client) :
 
 #     print("TEST 5 RESPONSE : ", res)
 
-def test_6_delete_all_users() :
+def test_6_final_db_cleanup() :
     db.session.query(User).delete()
+    db.session.query(Token).delete()
     db.session.commit()
