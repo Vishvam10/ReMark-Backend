@@ -25,4 +25,4 @@ class UserPreference(db.Model):
 
    
     def to_dict(self):
-        return dict(user_id=self.user_id, show_resolved=self.show_resolved, show_moderated_comments=self.show_moderated_comments, comments_limit_per_annotation=self.comments_limit_per_annotation, default_theme=self.default_theme, brand_colors=self.brand_colors)
+        return dict(user_id=self.user_id, show_moderated_comments=self.show_moderated_comments, comments_limit_per_annotation=self.comments_limit_per_annotation, default_theme=self.default_theme, brand_colors=self.brand_colors)

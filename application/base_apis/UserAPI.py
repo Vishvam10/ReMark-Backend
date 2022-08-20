@@ -103,7 +103,7 @@ class UserAPI(Resource):
             pref = db.session.query(UserPreference).filter(UserPreference.user_id == ID).first()
 
             if pref is None:
-                new_pref = UserPreference(user_id=ID,show_resolved=True, show_moderated_comments=True, comments_limit_per_annotation=10, default_theme="light", brand_colors = "")
+                new_pref = UserPreference(user_id=ID, show_moderated_comments=True, comments_limit_per_annotation=10, default_theme="light", brand_colors = "")
                 db.session.add(new_pref)
 
 

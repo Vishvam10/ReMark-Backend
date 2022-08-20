@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 3e9ac9337ef7
-Revises: 7f8dc677986d
-Create Date: 2022-08-19 19:24:51.532569
+Revision ID: 89c68fc07fe9
+Revises: 
+Create Date: 2022-08-20 19:32:55.635677
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '3e9ac9337ef7'
-down_revision = '7f8dc677986d'
+revision = '89c68fc07fe9'
+down_revision = None
 branch_labels = None
 depends_on = None
 
@@ -41,6 +41,15 @@ def upgrade():
     sa.UniqueConstraint('password'),
     sa.UniqueConstraint('user_id'),
     sa.UniqueConstraint('username')
+    )
+    op.create_table('userpreference',
+    sa.Column('user_id', sa.String(), nullable=False),
+    sa.Column('show_moderated_comments', sa.Boolean(), nullable=True),
+    sa.Column('comments_limit_per_annotation', sa.Integer(), nullable=True),
+    sa.Column('default_theme', sa.String(), nullable=True),
+    sa.Column('brand_colors', sa.String(), nullable=True),
+    sa.PrimaryKeyConstraint('user_id'),
+    sa.UniqueConstraint('user_id')
     )
     op.create_table('website',
     sa.Column('website_id', sa.String(), nullable=False),
@@ -101,6 +110,7 @@ def downgrade():
     op.drop_table('comment')
     op.drop_table('annotation')
     op.drop_table('website')
+    op.drop_table('userpreference')
     op.drop_table('user')
     op.drop_table('token')
     # ### end Alembic commands ###

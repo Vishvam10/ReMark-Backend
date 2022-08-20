@@ -3,23 +3,17 @@ import tempfile
 import pytest
 
 from application import create_app
-
+from application.models.User import User
+from application.models.Token import Token
 from application.database.database import db
 
 
 @pytest.fixture
 def app():
-    # db_fd, db_path = tempfile.mkstemp()
     app, api, celery, cache = create_app(environment="testing")
-    # app.config["SQLALCHEMY_DATABASE_URI"] = db_path + ".db.sqlite3"
     app.app_context().push()
     db.create_all()
-    print("DB URI : ", app.config["SQLALCHEMY_DATABASE_URI"])
-
-    # print("DB FD : ", db_path)
-    # print("APP CONFIG : ", app.config["TESTING"])
-    # print("URL MAP : ", app.url_map)
-
+    
     yield app
 
 
