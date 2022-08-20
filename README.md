@@ -51,8 +51,13 @@ Run the development server
 
 - [x] Configure logger
 - [ ] Write tests for APIs :
-  - [ ] Write a common class / function for checking API_KEY headers
-  - [ ] Explore subtests for repetitive tasks
+  - [x] AuthAPI
+  - [ ] UserAPI (PUT and DELETE are left)
+  - [ ] TokenAPI ()
+  - [ ] WebsiteAPI ()
+  - [ ] AnnotationAPI ()
+  - [ ] CommentAPI ()
+  - [ ] UserPreferenceAPI ()
 - [ ] Write the documentation for testing
 
 # Features 
