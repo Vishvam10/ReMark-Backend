@@ -18,6 +18,8 @@ from application.models.Annotation import Annotation
 from application.models.Comment import Comment
 from application.models.Website import Website
 
+user_extras = Blueprint("user_extras", __name__)
+
 allowed_authorities = ["admin", "user"]
 
 user_output_fields = {
@@ -241,44 +243,6 @@ def get_all_users():
     # jsonify() works because the @dataclass
     # decorator is present in the User model
     return jsonify(users)
-
-
-@app.route('/api/user/update_user_preferences/<string:user_id>', methods=["GET", "PUT"])
-def user_preferences(user_id):
-    if(request.method == "GET"):
-        user = db.session.query(User).filter(User.user_id == user_id).first()
-        if(user is None):
-            raise BusinessValidationError(
-                status_code=400, error_message="Invalid user ID or no such user exists")
-
-        data = {
-            "webhook_url": user.webhook_url,
-            "user_preferences": user.user_preferences
-        }
-        return jsonify(data)
-
-    if(request.method == "PUT"):
-        data = request.json
-        webhook_url = data["webhook_url"]
-        user_preferences = data["user_preferences"]
-
-        user = db.session.query(User).filter(User.user_id == user_id).first()
-
-        if(user is None):
-            raise BusinessValidationError(
-                status_code=400, error_message="Invalid user ID or no such user exists")
-
-        user.webhook_url = webhook_url
-        user.user_preferences = user_preferences
-
-        db.session.add(user)
-        db.session.commit()
-
-        return_value = {
-            "message": "Updated user preferences"
-        }
-
-        return jsonify(return_value)
 
 
 @jwt_required()

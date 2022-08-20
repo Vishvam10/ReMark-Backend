@@ -56,6 +56,7 @@ def create_app(environment="dev"):
     from application.base_apis.AnnotationAPI import annotation_extras
     from application.base_apis.CommentAPI import CommentAPI
     from application.base_apis.UserAPI import UserAPI
+    from application.base_apis.UserAPI import user_extras
     from application.base_apis.UserPreferenceAPI import UserPreferenceAPI
 
 
@@ -76,6 +77,7 @@ def create_app(environment="dev"):
     app.register_blueprint(api_bp)
     app.register_blueprint(website_extras)
     app.register_blueprint(annotation_extras)
+    app.register_blueprint(user_extras)
     app.app_context().push()
     
     # Create celery
