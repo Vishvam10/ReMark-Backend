@@ -36,7 +36,6 @@ def test_0_init_admin(client, auth) :
     if(user is not None) :
         user_id = user.__dict__["user_id"]
         db.session.query(User).filter(User.username == ADMIN_DATA["username"]).delete()
-        db.session.query(Token).filter(Token.user_id == user_id)
         db.session.commit()
     res = json.loads(client.post(USER_API_URL, json=ADMIN_DATA).data)
     TESTING_ADMIN_ID = res.get("data").get("user_id")
