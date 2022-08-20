@@ -51,6 +51,7 @@ def create_app(environment="dev"):
     from application.specific_apis import fileDownload
     from application.base_apis.TokenAPI import TokenAPI
     from application.base_apis.WebsiteAPI import WebsiteAPI
+    from application.base_apis.WebsiteAPI import website_extras
     from application.base_apis.AnnotationAPI import AnnotationAPI
     from application.base_apis.CommentAPI import CommentAPI
     from application.base_apis.UserAPI import UserAPI
@@ -72,6 +73,7 @@ def create_app(environment="dev"):
     api.add_resource(TokenAPI, "/api/token/<string:user_id>")
 
     app.register_blueprint(api_bp)
+    app.register_blueprint(website_extras)
     app.app_context().push()
     
     # Create celery

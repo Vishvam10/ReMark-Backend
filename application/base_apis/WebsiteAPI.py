@@ -12,6 +12,9 @@ from flask_restful import fields, marshal_with
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required
 from flask import jsonify, request
+from flask import Blueprint
+
+website_extras = Blueprint("website_extras", __name__)
 
 from flask import current_app as app
 
@@ -125,7 +128,7 @@ class WebsiteAPI(Resource):
 
 
 @jwt_required() 
-@app.route('/api/website/all/<string:user_id>', methods=["GET"])
+@website_extras.route('/api/website/all/<string:user_id>', methods=["GET"])
 def get_all_websites(user_id) :
     check_headers(request=request)
 
