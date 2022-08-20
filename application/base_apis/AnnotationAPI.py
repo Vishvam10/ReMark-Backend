@@ -248,7 +248,7 @@ class AnnotationAPI(Resource):
 
 
 @jwt_required()
-@app.route('/api/annotation/all/<string:website_id>', methods=["GET"])
+@annotation_extras.route('/api/annotation/all/<string:website_id>', methods=["GET"])
 def get_all_annotations_by_website_id(website_id):
     check_headers(request=request)
 

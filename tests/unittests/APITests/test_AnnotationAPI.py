@@ -87,12 +87,18 @@ def test_1_create_annotation(client) :
 
     TESTING_ANNOTATION_ID = res.get("data").get("annotation_id")
 
-def test_2_get_annotation_by_annotation_id(client) :
-    global ANNOTATION_DATA
+def test_2a_get_annotation_by_annotation_id(client) :
     url = "{}/{}".format(ANNOTATION_API_URL, TESTING_ANNOTATION_ID)
     res = json.loads(client.get(url, headers=HEADERS).data)
     assert res is not None
     assert res.get("annotation_id") == TESTING_ANNOTATION_ID
+
+def test_2b_get_annotation_by_website_id(client) :
+    global TESTING_WEBSITE_ID
+    url = "{}/all/{}".format(ANNOTATION_API_URL, TESTING_WEBSITE_ID)
+    res = json.loads(client.get(url, headers=HEADERS).data)
+    assert res is not None
+    assert type(res) == list
 
 def test_3a_edit_annotation_name(client) :
     global ANNOTATION_DATA
@@ -152,7 +158,6 @@ def test_4_cleanup() :
     global TESTING_ADMIN_ID
     db.session.query(Annotation).delete()
     db.session.query(Website).filter(Website.website_id == TESTING_WEBSITE_ID).delete()
-    print("TEST 4 RESPONSE : ", TESTING_ADMIN_ID)
     db.session.query(Token).filter(Token.user_id == TESTING_ADMIN_ID)
     db.session.query(User).filter(User.user_id == TESTING_ADMIN_ID)
     db.session.commit()
