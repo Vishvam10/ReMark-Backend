@@ -219,22 +219,22 @@ For testing a specific function in a testfile, use the `-k` flag :
 
 # Optional Featues 
 
-These be added in the future. ($P_i$ stands for priority and $P_1 > P_2 > ... P_n$)
+These be added in the future. (Pi stands for priority and P1 > P2 > ... Pn)
 
-- ($P_1$) Nested comments ( DB implementation present but need to parse it properly )
-- ($P_1$) Import and Export as Excel / CSV Jobs
-- ($P_2$) Using webhooks for sending emails and SMS notifications
-- ($P_2$) Groups and IAM for organizations
+- (P1) Nested comments ( DB implementation present but need to parse it properly )
+- (P1) Import and Export as Excel / CSV Jobs
+- (P2) Using webhooks for sending emails and SMS notifications
+- (P2) Groups and IAM for organizations
 
 <br>
 
 # Limitations
 
-All though it can work with interactive components, there are cases where it **fails to annotate dynamic content**. For example, say there is a website which shows the whether of a location given by the user. Remark can annotate the weather modal of (say) New York alone but upon rendering a completely new data, the annotation is lost (though it is present in the DB)
+All though it can work with interactive components, there are cases where it **fails to annotate dynamic content**. For example, say there is a website that shows the whether of a location **given by the user**. Remark can annotate the weather modal component of (say) New York alone but upon rendering a completely new data, the annotation is lost (though it is present in the DB)
 
 > **Workaround** : Instead of annotating the dynamically changing child container :
 >  - Annotate the parent container or
 >  - Annotate an element that triggers the change or
 >  - In the worst case, annotate the nearest static element
 
-Dynamic content (the ones that are received from the server) are hard to annotate in general. Remark uses 4+ different checks to get the annotated DOM elemets. These include : `html_id` check, `html_class` check, `html_node_xpath` check (This was particularly hard to implement), `html_tag` + `html_text_content` check. Dynamic content have usually breaks all the checks because, well, it is dynamic. **Note that dynamic content that actually passes one of the checks are rendered properly.** It is only those that fail all of them are not rendered
+Dynamic content (the ones that are received from the server) are hard to annotate in general. Remark uses 4+ different checks to get the annotated DOM elemets. These include : `html_id` check, `html_class` check, `html_node_xpath` check (This was particularly hard to implement), `html_tag` + `html_text_content` check. Dynamic content have usually breaks all the checks because, well, it is dynamic. **Note that dynamic content that actually passes one of the checks are rendered properly. It is only those that fail all of them are not rendered.** Usually, the `html_id` remains the same. So, there are cases where the annotations are rendering properly. But to be in the same side, please follow the workarounds**. 
