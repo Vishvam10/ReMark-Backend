@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS userpreference;
 DROP TABLE IF EXISTS token;
 DROP TABLE IF EXISTS website;
 DROP TABLE IF EXISTS annotation;
@@ -20,6 +21,16 @@ CREATE TABLE user (
 	UNIQUE (password), 
 	UNIQUE (user_id), 
 	UNIQUE (username)
+);
+
+CREATE TABLE userpreference (
+	user_id	VARCHAR NOT NULL,
+	show_moderated_comments	BOOLEAN,
+	comments_limit_per_annotation	INTEGER,
+	default_theme	VARCHAR,
+	brand_colors	VARCHAR,
+	UNIQUE(user_id),
+	PRIMARY KEY(user_id)
 );
 
 CREATE TABLE token (

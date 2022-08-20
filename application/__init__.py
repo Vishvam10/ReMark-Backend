@@ -26,6 +26,7 @@ def create_app(environment="dev"):
         app.config.from_object(LocalTestingConfig)
     else:
         app.config.from_object(LocalDevelopmentConfig)
+    print(LocalDevelopmentConfig.SQLALCHEMY_DATABASE_URI)
 
     jwt = JWTManager(app)
     app.app_context().push()

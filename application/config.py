@@ -38,7 +38,9 @@ class LocalDevelopmentConfig(Config):
     JWT_ACCESS_TOKEN_EXPIRES = 21600 # 6hrs
 
 class LocalTestingConfig(Config):
-    SQLALCHEMY_DATABASE_URI = ""
+    SQLITE_DB_DIR = os.path.join(basedir, "../db_directory")
+    SQLALCHEMY_DATABASE_URI =  "sqlite:///" + \
+        os.path.join(SQLITE_DB_DIR, "test_db.sqlite3")
     DEBUG = True
     CORS_HEADERS = "Content-Type"
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))

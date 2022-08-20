@@ -15,6 +15,7 @@ def app():
     app, api, celery, cache = create_app(environment="testing")
     
     app.config["SQLALCHEMY_DATABASE_URI"] = db_path
+    print("************** DEBUG **************", db_path)
 
     with app.app_context():
         init_db()
