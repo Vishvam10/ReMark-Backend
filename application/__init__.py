@@ -23,7 +23,6 @@ migrate = Migrate()
 def create_app(environment="dev"):
     app = Flask(__name__)
     
-    print("IN INIT", environment)
     if(environment == "testing"):
         app.config.from_object(LocalTestingConfig)
     else:

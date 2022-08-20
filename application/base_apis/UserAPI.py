@@ -31,7 +31,6 @@ user_output_fields = {
 }
 
 class UserAPI(Resource):
-    @jwt_required()
     @marshal_with(user_output_fields)
     def get(self, user_id):
         user = db.session.query(User).filter(User.user_id == user_id).first()

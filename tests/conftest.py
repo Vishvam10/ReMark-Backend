@@ -1,5 +1,4 @@
-import os
-import tempfile
+import json
 import pytest
 
 from application import create_app
@@ -15,7 +14,6 @@ def app():
     db.create_all()
     
     yield app
-
 
 @pytest.fixture
 def client(app):
@@ -34,14 +32,15 @@ class AuthActions(object):
     def __init__(self, client):
         self._client = client
 
-    def login(self, username='test', password='test'):
-        return self._client.post(
-            '/api/login',
-            data={'username': username, 'password': password}
-        )
-
-    def logout(self):
-        return self._client.get('/auth/logout')
+    def login(self, data):
+        try :
+            res = json.loads(self._client.post('/api/login', json=data).data)
+            return res
+        except :
+            print("\n\n************* ERROR *************\n\n", self._client.post('/api/login', json=data))
+            print("\n\n************* ERROR *************\n\n", self._client.post('/api/login', json=data).data)
+            return "ERROR"
+            
 
 @pytest.fixture
 def auth(client):
