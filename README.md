@@ -45,7 +45,7 @@ Run the development server
 - [x] **Change the Annotation Model** : Store the annotation by using `XPath` instead of `data-` attribute
 - [x] Debug CREATE website issue
 - [x] Create `User Preference` model
-- [ ] Create defaults and basic API for user preference model (OPTIONAL - Handled in the frontend)
+- [x] Create defaults and basic API for user preference model ~~(OPTIONAL - Handled in the frontend)~~
 - [x] Add a secondary field for identifying HTML node ( in case xpath fails )
 - [x] Fix edge cases in comment voting
 
@@ -53,12 +53,12 @@ Run the development server
 - [ ] Write tests for APIs :
   - [x] AuthAPI
   - [ ] UserAPI (PUT and DELETE are left)
-  - [ ] TokenAPI ()
-  - [ ] WebsiteAPI ()
-  - [ ] AnnotationAPI ()
-  - [ ] CommentAPI ()
-  - [ ] UserPreferenceAPI ()
-- [ ] Write the documentation for testing
+  - [x] TokenAPI
+  - [x] WebsiteAPI
+  - [x] AnnotationAPI
+  - [x] CommentAPI
+  - [ ] UserPreferenceAPI (**OPTIONAL**) 
+- [ ] Write the documentation for testing (**OPTIONAL**)
 
 # Features 
 
