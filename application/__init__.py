@@ -1,11 +1,12 @@
 from flask import Flask
 from flask_restful import Api
 from flask_migrate import Migrate
+from flask import Blueprint
 
 # from application import workers
 from application.config import LocalDevelopmentConfig, LocalTestingConfig
 
-from application.database.dev.database import db
+from application.database.database import db
 from flask_cors import CORS
 # from flask_caching import Cache
 
@@ -22,11 +23,16 @@ migrate = Migrate()
 def create_app(environment="dev"):
     app = Flask(__name__)
     
+    print("IN INIT", environment)
     if(environment == "testing"):
         app.config.from_object(LocalTestingConfig)
+        print("IN INIT TESTING 0", LocalTestingConfig.APP_ROOT)
+        print("IN INIT TESTING 1", LocalTestingConfig.SQLITE_DB_DIR)
+        print("IN INIT TESTING 2", LocalTestingConfig.SQLALCHEMY_DATABASE_URI)
     else:
+        print("IN INIT TESTING 3", LocalDevelopmentConfig.SQLITE_DB_DIR)
+        print("IN INIT TESTING 4", LocalDevelopmentConfig.SQLALCHEMY_DATABASE_URI)
         app.config.from_object(LocalDevelopmentConfig)
-    print(LocalDevelopmentConfig.SQLALCHEMY_DATABASE_URI)
 
     jwt = JWTManager(app)
     app.app_context().push()
@@ -40,9 +46,40 @@ def create_app(environment="dev"):
     CORS(app)
     app.app_context().push()
 
-    api = Api(app)
-    app.app_context().push()
+    from application.models.User import User
+    from application.models.Token import Token
+    from application.models.UserPreference import UserPreference
+    from application.models.Comment import Comment
+    from application.models.Annotation import Annotation
+    from application.models.Website import Website
 
+    from application.specific_apis import login
+    from application.specific_apis import fileDownload
+    from application.base_apis.TokenAPI import TokenAPI
+    from application.base_apis.WebsiteAPI import WebsiteAPI
+    from application.base_apis.AnnotationAPI import AnnotationAPI
+    from application.base_apis.CommentAPI import CommentAPI
+    from application.base_apis.UserAPI import UserAPI
+    from application.base_apis.UserPreferenceAPI import UserPreferenceAPI
+
+
+
+    api_bp = Blueprint('/api/', __name__)
+    api = Api(api_bp)
+    
+    api.add_resource(UserAPI, "/api/user", "/api/user/<string:user_id>")
+    api.add_resource(UserPreferenceAPI, "/api/user_preference/<string:user_id>")
+    api.add_resource(AnnotationAPI, "/api/annotation",
+                        "/api/annotation/<string:annotation_id>")
+    api.add_resource(CommentAPI, "/api/comment",
+                        "/api/comment/<string:comment_id>")
+    api.add_resource(WebsiteAPI, "/api/website",
+                        "/api/website/<string:website_id>")
+    api.add_resource(TokenAPI, "/api/token/<string:user_id>")
+
+    app.register_blueprint(api_bp)
+    app.app_context().push()
+    
     # Create celery
     # celery = workers.celery
 

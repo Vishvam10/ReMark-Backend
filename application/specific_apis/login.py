@@ -1,5 +1,5 @@
 from flask import request
-from application.database.dev.database import db
+from application.database.database import db
 from flask_jwt_extended import create_access_token
 from flask import current_app as app
 import bcrypt

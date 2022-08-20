@@ -1,5 +1,5 @@
 from flask import request
-from application.database.dev.database import db
+from application.database.database import db
 from flask import current_app as app
 
 from flask import jsonify, request, send_file

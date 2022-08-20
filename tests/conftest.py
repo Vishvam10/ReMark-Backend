@@ -3,30 +3,29 @@ import tempfile
 import pytest
 
 from application import create_app
-from application.database.test.testing_database import get_db, init_db
 
-with open(os.path.join(os.path.dirname(__file__), 'data.sql'), 'rb') as f:
-    _data_sql = f.read().decode('utf8')
+from application.database.database import db
 
 
 @pytest.fixture
 def app():
-    db_fd, db_path = tempfile.mkstemp()
+    # db_fd, db_path = tempfile.mkstemp()
     app, api, celery, cache = create_app(environment="testing")
-    
-    app.config["SQLALCHEMY_DATABASE_URI"] = db_path
-    print("************** DEBUG **************", db_path)
+    # app.config["SQLALCHEMY_DATABASE_URI"] = db_path + ".db.sqlite3"
+    app.app_context().push()
+    db.create_all()
+    print("DB URI : ", app.config["SQLALCHEMY_DATABASE_URI"])
 
-    with app.app_context():
-        init_db()
-        get_db().executescript(_data_sql)
+    # print("DB FD : ", db_path)
+    # print("APP CONFIG : ", app.config["TESTING"])
+    # print("URL MAP : ", app.url_map)
 
     yield app
 
-    os.close(db_fd)
 
 @pytest.fixture
 def client(app):
+    app.testing = True
     with app.test_client() as client:
         yield client
 

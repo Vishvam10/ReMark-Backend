@@ -2,7 +2,7 @@ from application.models.UserPreference import UserPreference
 from application.utils.validation import BusinessValidationError
 from application.utils.hash import check_hashed_password, check_hashed_password, create_hashed_password, generate_random_id, generate_api_key
 from application.utils.check_headers import check_headers
-from application.database.dev.database import db
+from application.database.database import db
 
 from flask_restful import fields, marshal_with
 from flask_restful import Resource
@@ -10,6 +10,7 @@ from flask_jwt_extended import jwt_required
 from flask import jsonify, request
 
 from flask import current_app as app
+from flask import Blueprint
 
 from application.models.User import User
 from application.models.Token import Token
@@ -28,7 +29,6 @@ user_output_fields = {
     "created_at": fields.String,
     "modified_at": fields.String,
 }
-
 
 class UserAPI(Resource):
     @jwt_required()

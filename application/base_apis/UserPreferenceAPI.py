@@ -1,7 +1,7 @@
 from application.models.UserPreference import UserPreference
 from application.utils.validation import BusinessValidationError
 from application.utils.check_headers import check_headers
-from application.database.dev.database import db
+from application.database.database import db
 
 from flask_restful import fields, marshal_with
 from flask_restful import Resource

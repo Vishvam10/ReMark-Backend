@@ -4,7 +4,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config():
     DEBUG = False
-    TESTING = False
+    TESTING = None
     SQLITE_DB_DIR = None
     SQLALCHEMY_DB_URI = None
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -30,6 +30,7 @@ class LocalDevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + \
         os.path.join(SQLITE_DB_DIR, "db.sqlite3")
     DEBUG = True
+    TESTING = False
     CORS_HEADERS = "Content-Type"
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))
     MEDIA_FOLD = os.getcwd() + '\media'
@@ -42,6 +43,7 @@ class LocalTestingConfig(Config):
     SQLALCHEMY_DATABASE_URI =  "sqlite:///" + \
         os.path.join(SQLITE_DB_DIR, "test_db.sqlite3")
     DEBUG = True
+    TESTING = True
     CORS_HEADERS = "Content-Type"
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))
     MEDIA_FOLD = os.getcwd() + '\media'

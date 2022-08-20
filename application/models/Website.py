@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from application.database.dev.database import db
+from application.database.database import db
 
 @dataclass
 class Website(db.Model):

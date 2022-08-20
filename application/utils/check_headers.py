@@ -1,6 +1,6 @@
 from application.utils.validation import BusinessValidationError
 
-from application.database.dev.database import db
+from application.database.database import db
 
 from application.models.Token import Token
 
