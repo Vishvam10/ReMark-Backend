@@ -59,8 +59,6 @@ def test_3_delete_token(client) :
 def test_4_update_token() :
     return
 
-# CLEANUP
-
 def test_5_cleanup() :
     db.session.query(User).filter(User.user_id == TESTING_USER_ID).delete()
     db.session.query(Token).delete()

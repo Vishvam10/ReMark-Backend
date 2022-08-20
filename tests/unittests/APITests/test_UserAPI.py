@@ -108,7 +108,6 @@ def test_5_delete_user(client, auth) :
     check = res.get("message") == "Admin deleted successfully" or res.get("message") == "User deleted successfully"
     assert check == True
 
-# CLEANUP
 def test_6_cleanup() :
     db.session.query(User).delete()
     db.session.query(Token).delete()
