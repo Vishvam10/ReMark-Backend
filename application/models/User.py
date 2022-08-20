@@ -18,6 +18,8 @@ class User(db.Model):
     authority: str
     created_at: datetime.datetime
     modified_at: datetime.datetime
+    upvotes: str
+    downvotes: str
 
     user_id = db.Column(db.String, unique=True,
                         nullable=False, primary_key=True)

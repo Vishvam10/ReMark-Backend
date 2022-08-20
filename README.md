@@ -1,12 +1,10 @@
 # ReMark Backend
 
-This is the backend for ReMark (a website annotation tool). It is built using `Flask`. The APIs are RESTful and are made using `Flask-RESTful`.
+This is the backend server for ReMark (a website annotation tool. More about that [here](https://github.com/Vishvam10/ReMark-Client)). It is built using `Flask`. The APIs are RESTful and are made using `Flask-RESTful`. The primary database, for development, testing and production is `sqlite3`. That is used with `SQLAlchemy` and `Flask-Migrate` to abstract the database. **The production DB however will be migrated to `PostgreSQL` in the near future**
 
 <br>
 
 # Basic setup
-
-Follow these steps to setup the backend server locally
 
 <br>
 
@@ -26,6 +24,15 @@ Create a virtual environment in the project folder
   python3 -m venv /path/to/new/virtual/environment
 ```
 
+Activate the virtual environment
+```
+  .\venv\Scripts\activate
+```
+
+**NOTE :** Please visit this [link](https://www.geeksforgeeks.org/creating-python-virtual-environment-windows-linux/) to know more about installing virtual environments
+
+<br>
+
 Install the dependencies using pip
 ```bash
   pip install - r requirements.txt
@@ -33,7 +40,49 @@ Install the dependencies using pip
 
 Run the development server 
 ```bash
-  python main.py
+  python app.py
+```
+
+<br>
+
+# Testing
+
+The backend is tested mostly using `pytest 7.1.2` and a bit of `coverage`. For the time being, the tests are all unit tests. Integration tests and other higher order tests will be performed in the future. 
+
+For testing :
+  - `app.config["TESTING"]` is set to `True`
+  - the `app.config[SQLALCHEMY_DATABASE_URI]` is set to a local testing database in the `db_directory` folder
+
+
+Please check whether `pytest` is installed in out local sytem by doing a quick :
+
+```
+  $ pytest --version
+  (Output) pytest 7.1.2
+```
+
+If you get any errors, just do a pip install :
+
+```
+  pip install pytest coverage
+```
+
+For running a specific test file, use the `pytest` command. 
+
+```
+  pytest .\tests\unittests\APITests\test_Something.py
+```
+
+For redirecting the output to stdout (to show the `print()` statements), use the `-s` flag.
+
+```
+  pytest -s .\tests\unittests\APITests\test_Something.py
+```
+
+For testing a specific function in a testfile, use the `-k` flag :
+
+```
+ pytest -s .\tests\unittests\APITests\test_Something.py -k function_name
 ```
 
 <br>
@@ -62,13 +111,12 @@ Run the development server
 
 # Features 
 
-- [x] User Login / Signup
-- [x] Authentication and Authorization using JWT
-- [x] Admin Dashboard
-- [x] Annotation Management
-- [x] Comment Management
-- [ ] ~~Pricing Options~~
-
+- ✅ **Works on any static site and delivers a good result on interactive components like popups, slideshows, hovering cards, etc.**
+- ✅ Annotation Management 
+- ✅ Comment Management with Upvotes, Downvotes and Nesting
+- ✅ User and Admin Login / Signup
+- ✅ Authentication and Authorization using JWT
+- ✅ Admin Dashboard
 
 # Specifications
 
@@ -85,6 +133,8 @@ Run the development server
         authority : str
         created_at : datetime.datetime
         modified_at : datetime.datetime
+        upvotes: str
+        downvotes: str
     }
     ```
 -  ```
@@ -93,7 +143,6 @@ Run the development server
       api_key : str
     }
     ```
-
 -  ```
     WEBSITE {
         website_id : str
@@ -106,24 +155,27 @@ Run the development server
    ```
 -  ```
     ANNOTATION {
-        annotation_id : str
-        annotation_name : str
-        website_id : str    
-        website_uri : str 
-        node_xpath : str 
-        tags : str 
-        resolved : bool
+        annotation_id: str
+        annotation_name: str
+        website_id: str
+        website_uri: str
+        node_xpath: str
+        html_id: str
+        html_tag: str
+        html_text_content: str
+        tags: str
+        resolved: bool
 
-        created_at : datetime.datetime
-        updated_at : datetime.datetime
+        created_at: datetime.datetime
+        updated_at: datetime.datetime
 
-        created_by_id : str
-        created_by : str
-        
-        modified_by_id : str
-        modified_by : str
-        
-        comments : list
+        created_by_id: str
+        created_by: str
+
+        modified_by_id: str
+        modified_by: str
+
+        comments: list
     }
     ```
 -  ```
@@ -143,20 +195,45 @@ Run the development server
         created_at : datetime.datetime
         updated_at : datetime.datetime
 
+        created_by_id : str
         created_by : str
+    }
+    ```
+-  ```
+    USERPREFERENCE {
+        user_id : str
+        show_moderated_comments : bool
+        comments_limit_per_annotation : int
+        default_theme : str
+        brand_colors : str
     }
     ```
 
 ### API Documentation :
 
-- [ ] Include `openapi.yaml` file
-- [ ] Include Insomnia API file
+- [] Include `openapi.yaml` file (**OPTIONAL**)
+- [x] Include Insomnia API file
 
-# Optional Featues (May be added in the future)
+<br>
 
-($P_i$ stands for priority and $P_1 > P_2 > ... P_n$)
+# Optional Featues 
+
+These be added in the future. ($P_i$ stands for priority and $P_1 > P_2 > ... P_n$)
 
 - ($P_1$) Nested comments ( DB implementation present but need to parse it properly )
 - ($P_1$) Import and Export as Excel / CSV Jobs
 - ($P_2$) Using webhooks for sending emails and SMS notifications
 - ($P_2$) Groups and IAM for organizations
+
+<br>
+
+# Limitations
+
+All though it can work with interactive components, there are cases where it **fails to annotate dynamic content**. For example, say there is a website which shows the whether of a location given by the user. Remark can annotate the weather modal of (say) New York alone but upon rendering a completely new data, the annotation is lost (though it is present in the DB)
+
+> **Workaround** : Instead of annotating the dynamically changing child container :
+>  - Annotate the parent container or
+>  - Annotate an element that triggers the change or
+>  - In the worst case, annotate the nearest static element
+
+Dynamic content (the ones that are received from the server) are hard to annotate in general. Remark uses 4+ different checks to get the annotated DOM elemets. These include : `html_id` check, `html_class` check, `html_node_xpath` check (This was particularly hard to implement), `html_tag` + `html_text_content` check. Dynamic content have usually breaks all the checks because, well, it is dynamic. **Note that dynamic content that actually passes one of the checks are rendered properly.** It is only those that fail all of them are not rendered
