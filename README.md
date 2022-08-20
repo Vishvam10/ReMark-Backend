@@ -112,6 +112,7 @@ For testing a specific function in a testfile, use the `-k` flag :
 # Features 
 
 - ✅ **Works on any static site and delivers a good result on interactive components like popups, slideshows, hovering cards, etc.**
+- ✅ **Works on various HTML elements** like `div`, `span`, `img`, `p`, all the `h` tags, `section`, and many more. Check out the [Remark Client documentation](https://github.com/Vishvam10/ReMark-Client) to know more.  
 - ✅ Annotation Management 
 - ✅ Comment Management with Upvotes, Downvotes and Nesting
 - ✅ User and Admin Login / Signup
