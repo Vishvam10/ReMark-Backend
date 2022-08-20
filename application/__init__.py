@@ -26,12 +26,7 @@ def create_app(environment="dev"):
     print("IN INIT", environment)
     if(environment == "testing"):
         app.config.from_object(LocalTestingConfig)
-        print("IN INIT TESTING 0", LocalTestingConfig.APP_ROOT)
-        print("IN INIT TESTING 1", LocalTestingConfig.SQLITE_DB_DIR)
-        print("IN INIT TESTING 2", LocalTestingConfig.SQLALCHEMY_DATABASE_URI)
     else:
-        print("IN INIT TESTING 3", LocalDevelopmentConfig.SQLITE_DB_DIR)
-        print("IN INIT TESTING 4", LocalDevelopmentConfig.SQLALCHEMY_DATABASE_URI)
         app.config.from_object(LocalDevelopmentConfig)
 
     jwt = JWTManager(app)
