@@ -212,14 +212,14 @@ For testing a specific function in a testfile, use the `-k` flag :
 
 ### API Documentation :
 
-- [ ] Include `openapi.yaml` file (**OPTIONAL**)
+- [] Include `openapi.yaml` file (**OPTIONAL**)
 - [x] Include Insomnia API file
 
 <br>
 
 # Optional Featues 
 
-These be added in the future. ($ P_i $ stands for priority and $P_1 > P_2 > ... P_n$)
+These be added in the future. ($P_i$ stands for priority and $P_1 > P_2 > ... P_n$)
 
 - ($P_1$) Nested comments ( DB implementation present but need to parse it properly )
 - ($P_1$) Import and Export as Excel / CSV Jobs
