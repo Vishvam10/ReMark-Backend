@@ -38,6 +38,11 @@ Install the dependencies using pip
   pip install - r requirements.txt
 ```
 
+Change the environment to dev in `app.py` file 
+```
+  app, api, celery, cache = create_app(environment="DEVELOPMENT")
+```
+
 Run the development server 
 ```bash
   python app.py
