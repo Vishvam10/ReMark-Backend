@@ -22,13 +22,12 @@ migrate = Migrate()
 
 import os
 
-def create_app():
+def create_app(environment="DEVELOPMENT"):
     app = Flask(__name__)
-    env = os.environ.get('FLASK_ENVIRONMENT', None)
-    print("ENVIRONMENT : ", env)
-    if(env == "TESTING"):
+    # env = os.environ.get('FLASK_ENVIRONMENT', None)
+    if(environment == "TESTING"):
         app.config.from_object(LocalTestingConfig)
-    elif(env == "PRODUCTION"):
+    elif(environment == "PRODUCTION"):
         app.config.from_object(ProductionConfig)
     else :
         app.config.from_object(LocalDevelopmentConfig)
