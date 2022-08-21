@@ -1,6 +1,8 @@
 # ReMark Backend
 
-This is the backend server for ReMark (a website annotation tool. More about that [here](https://github.com/Vishvam10/ReMark-Client)). It is built using `Flask`. The APIs are RESTful and are made using `Flask-RESTful`. The primary database, for development, testing and production is `sqlite3`. That is used with `SQLAlchemy` and `Flask-Migrate` to abstract the database. **The production DB however will be migrated to `PostgreSQL` in the near future**
+This is the backend server for ReMark (a website annotation tool. More about that [here](https://github.com/Vishvam10/ReMark-Client)). It is built using `Flask`. The APIs are RESTful and are made using `Flask-RESTful`. The primary database, for development, testing and production is `sqlite3`. That is used with `SQLAlchemy` and `Flask-Migrate` to abstract the database. **The production DB however will be migrated to `PostgreSQL`**. 
+
+**NOTE :** The production server is hosted here : "https://remark-backend.herokuapp.com/" but there are some issues with Heroku configuration at the moment and it is unusable. So, please use the self-hosting option to build / test the app.
 
 <br>
 
