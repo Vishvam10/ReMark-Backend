@@ -4,7 +4,7 @@ This is the backend server for ReMark (a website annotation tool. More about tha
 
 <br>
 
-# Basic setup
+# Basic setup (Self hosting)
 
 <br>
 

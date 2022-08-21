@@ -40,8 +40,8 @@ class LocalDevelopmentConfig(Config):
 
 class LocalTestingConfig(Config):
     SQLITE_DB_DIR = os.path.join(basedir, "../db_directory")
-    SQLALCHEMY_DATABASE_URI =  "sqlite:///" + \
-        os.path.join(SQLITE_DB_DIR, "test_db.sqlite3")
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + \
+        os.path.join(SQLITE_DB_DIR, "db.sqlite3")
     DEBUG = True
     TESTING = True
     CORS_HEADERS = "Content-Type"
