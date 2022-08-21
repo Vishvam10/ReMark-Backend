@@ -26,9 +26,9 @@ from waitress import serve
 
 if __name__ == "__main__" :
     # env = os.environ.get("FLASK_ENVIRONMENT", None)
-    # port = int(os.environ.get("PORT", 17995)) 
+    port = int(os.environ.get("PORT", 17995)) 
     # if(env == "DEVELOPMENT" or env == "TESTING") :
-    app.run()
+    app.run(host="0.0.0.0", port=port)
     # if(env == "PRODUCTION") :
     #     print("CONFIG : ", app.config["SQLALCHEMY_DATABASE_URI"], my_app)
     #     serve(my_app, port=port)
