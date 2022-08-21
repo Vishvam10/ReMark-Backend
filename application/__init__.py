@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from flask import Blueprint
 
 # from application import workers
-from application.config import LocalDevelopmentConfig, LocalTestingConfig
+from application.config import LocalDevelopmentConfig, LocalTestingConfig, StagingConfig
 
 from application.database.database import db
 from flask_cors import CORS
@@ -27,8 +27,10 @@ def create_app(environment="DEVELOPMENT"):
     # env = os.environ.get('FLASK_ENVIRONMENT', None)
     if(environment == "TESTING"):
         app.config.from_object(LocalTestingConfig)
-    else :
+    elif(environment == "DEVELOPMENT") :
         app.config.from_object(LocalDevelopmentConfig)
+    else :
+        app.config.from_object(StagingConfig)
 
     jwt = JWTManager(app)
     app.app_context().push()
