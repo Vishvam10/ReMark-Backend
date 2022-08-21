@@ -21,11 +21,11 @@ cache = None
 migrate = Migrate()
 
 import os
-env = os.environ.get('ENV', None)
 
 def create_app():
     app = Flask(__name__)
-    
+    env = os.environ.get('FLASK_ENVIRONMENT', None)
+    print("ENVIRONMENT : ", env)
     if(env == "TESTING"):
         app.config.from_object(LocalTestingConfig)
     elif(env == "PRODUCTION"):
@@ -101,4 +101,3 @@ def create_app():
     # app.app_context().push()
 
     return app, api, celery, cache
-
