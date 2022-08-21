@@ -8,7 +8,7 @@ from application.models.Website import Website
 
 from application import create_app
 
-app, api, celery, cache = create_app(environment="PRODUCTION")
+app, api, celery, cache = create_app()
 
 from application.specific_apis import login
 from application.specific_apis import fileDownload
