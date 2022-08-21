@@ -51,29 +51,27 @@ class LocalTestingConfig(Config):
     JWT_SECRET_KEY = "hydra12512512$2141292-1231 242-2D@W!@$"
     JWT_ACCESS_TOKEN_EXPIRES = 21600 # 6hrs
 
-class StagingConfig(Config) :
-    SQLITE_DB_DIR = os.path.join(basedir, "../db_directory")
-    SQLALCHEMY_DATABASE_URI =  "sqlite://" + \
-        os.path.join(SQLITE_DB_DIR, "test_db.sqlite3")
-    DEBUG = True
-    TESTING = True
-    CORS_HEADERS = "Content-Type"
-    APP_ROOT = os.path.dirname(os.path.abspath(__file__))
-    MEDIA_FOLD = os.getcwd() + '\media'
-    MEDIA_FOLDER = os.path.join(APP_ROOT, MEDIA_FOLD)
-    JWT_SECRET_KEY = "hydra12512512$2141292-1231 242-2D@W!@$"
-    JWT_ACCESS_TOKEN_EXPIRES = 21600 # 6hrs
-
-
-# class ProductionConfig(Config) :
-#     DEBUG = False
-#     TESTING = False
+# class StagingConfig(Config) :
 #     SQLITE_DB_DIR = os.path.join(basedir, "../db_directory")
-#     SQLALCHEMY_DATABASE_URI = "sqlite:///" + \
-#         os.path.join(SQLITE_DB_DIR, "db.sqlite3")
+#     SQLALCHEMY_DATABASE_URI =  "sqlite://" + \
+#         os.path.join(SQLITE_DB_DIR, "test_db.sqlite3")
+#     DEBUG = True
+#     TESTING = True
 #     CORS_HEADERS = "Content-Type"
 #     APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 #     MEDIA_FOLD = os.getcwd() + '\media'
 #     MEDIA_FOLDER = os.path.join(APP_ROOT, MEDIA_FOLD)
-#     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", None)
-#     JWT_ACCESS_TOKEN_EXPIRES = os.environ.get("JWT_ACCESS_TOKEN_EXPIRES", None)
+#     JWT_SECRET_KEY = "hydra12512512$2141292-1231 242-2D@W!@$"
+#     JWT_ACCESS_TOKEN_EXPIRES = 21600 # 6hrs
+
+
+class ProductionConfig(Config) :
+    DEBUG = False
+    TESTING = False
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", None)
+    CORS_HEADERS = "Content-Type"
+    APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+    MEDIA_FOLD = os.getcwd() + '\media'
+    MEDIA_FOLDER = os.path.join(APP_ROOT, MEDIA_FOLD)
+    JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", None)
+    JWT_ACCESS_TOKEN_EXPIRES = os.environ.get("JWT_ACCESS_TOKEN_EXPIRES", None)
