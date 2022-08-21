@@ -20,16 +20,19 @@ cache = None
 
 migrate = Migrate()
 
-def create_app(environment="dev"):
+import os
+env = os.environ.get('ENV', None)
+
+def create_app():
     app = Flask(__name__)
     
-    if(environment == "testing"):
+    if(env == "TESTING"):
         app.config.from_object(LocalTestingConfig)
-    elif(environment == "production"):
+    elif(env == "PRODUCTION"):
         app.config.from_object(ProductionConfig)
     else :
         app.config.from_object(LocalDevelopmentConfig)
-        
+
     jwt = JWTManager(app)
     app.app_context().push()
 

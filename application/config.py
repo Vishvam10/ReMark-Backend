@@ -54,10 +54,10 @@ class LocalTestingConfig(Config):
 class ProductionConfig(Config) :
     DEBUG = False
     TESTING = False
-    SQLALCHEMY_DATABASE_URI = "postgres://rweeweyoztueya:b83ddbc06a88c5ab0719b9bd6580b40edd48bc9ba1f1aa6532ff255ef90d4c70@ec2-54-152-28-9.compute-1.amazonaws.com:5432/d23evho148fq0q"
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
     CORS_HEADERS = "Content-Type"
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))
     MEDIA_FOLD = os.getcwd() + '\media'
     MEDIA_FOLDER = os.path.join(APP_ROOT, MEDIA_FOLD)
-    JWT_SECRET_KEY = "hydra12512512$2141292-1231 242-2D@W!@$"
-    JWT_ACCESS_TOKEN_EXPIRES = 21600 # 6hrs
+    JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", None)
+    JWT_ACCESS_TOKEN_EXPIRES = os.environ.get("JWT_ACCESS_TOKEN_EXPIRES", None)
