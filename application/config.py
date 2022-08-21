@@ -68,7 +68,7 @@ class LocalTestingConfig(Config):
 class ProductionConfig(Config) :
     DEBUG = False
     TESTING = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", None)
+    SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI", None)
     CORS_HEADERS = "Content-Type"
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))
     MEDIA_FOLD = os.getcwd() + '\media'
