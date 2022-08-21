@@ -12,7 +12,6 @@ from application.models.Website import Website
 from application import create_app
 
 app, api, celery, cache = create_app()
-my_app = app
 
 from application.specific_apis import login
 from application.specific_apis import fileDownload
@@ -26,10 +25,10 @@ from application.base_apis.UserPreferenceAPI import *
 from waitress import serve
 
 if __name__ == "__main__" :
-    env = os.environ.get("FLASK_ENVIRONMENT", None)
-    port = int(os.environ.get("PORT", 17995)) 
-    if(env == "DEVELOPMENT" or env == "TESTING") :
-        my_app.run()
-    if(env == "PRODUCTION") :
-        print("CONFIG : ", app.config["SQLALCHEMY_DATABASE_URI"], my_app)
-        serve(my_app, port=port)
+    # env = os.environ.get("FLASK_ENVIRONMENT", None)
+    # port = int(os.environ.get("PORT", 17995)) 
+    # if(env == "DEVELOPMENT" or env == "TESTING") :
+    app.run()
+    # if(env == "PRODUCTION") :
+    #     print("CONFIG : ", app.config["SQLALCHEMY_DATABASE_URI"], my_app)
+    #     serve(my_app, port=port)
