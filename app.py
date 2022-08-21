@@ -29,6 +29,7 @@ if __name__ == "__main__" :
     env = os.environ.get("FLASK_ENVIRONMENT", None)
     port = int(os.environ.get("PORT", 17995)) 
     if(env == "DEVELOPMENT" or env == "TESTING") :
-        app.run()
+        my_app.run()
     if(env == "PRODUCTION") :
-        serve(app, port=port)
+        print("CONFIG : ", app.config["SQLALCHEMY_DATABASE_URI"], my_app)
+        serve(my_app, port=port)

@@ -54,7 +54,8 @@ class LocalTestingConfig(Config):
 class ProductionConfig(Config) :
     DEBUG = False
     TESTING = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", None)
+    SQLITE_DB_DIR = os.path.join(basedir, "../db_directory")
+    SQLALCHEMY_DATABASE_URI =  SQLALCHEMY_DATABASE_URI =  "sqlite:///" + os.path.join(SQLITE_DB_DIR, "db.sqlite3")
     CORS_HEADERS = "Content-Type"
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))
     MEDIA_FOLD = os.getcwd() + '\media'
