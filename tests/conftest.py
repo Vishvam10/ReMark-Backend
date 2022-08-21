@@ -10,8 +10,7 @@ from application.database.database import db
 
 @pytest.fixture
 def app():
-    os.environ["env"] = "TESTING"
-    app, api, celery, cache = create_app()
+    app, api, celery, cache = create_app(environment="TESTING")
     app.app_context().push()
     db.create_all()
     

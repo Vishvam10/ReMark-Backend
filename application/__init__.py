@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from flask import Blueprint
 
 # from application import workers
-from application.config import LocalDevelopmentConfig, LocalTestingConfig, ProductionConfig
+from application.config import LocalDevelopmentConfig, LocalTestingConfig
 
 from application.database.database import db
 from flask_cors import CORS
@@ -20,15 +20,13 @@ cache = None
 
 migrate = Migrate()
 
-import os
+# import os
 
 def create_app(environment="DEVELOPMENT"):
     app = Flask(__name__)
     # env = os.environ.get('FLASK_ENVIRONMENT', None)
     if(environment == "TESTING"):
         app.config.from_object(LocalTestingConfig)
-    elif(environment == "PRODUCTION"):
-        app.config.from_object(ProductionConfig)
     else :
         app.config.from_object(LocalDevelopmentConfig)
 

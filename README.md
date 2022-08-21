@@ -213,7 +213,7 @@ For testing a specific function in a testfile, use the `-k` flag :
 ### API Documentation :
 
 - [] Include `openapi.yaml` file (**OPTIONAL**)
-- [x] Include Insomnia API file
+- [x] Include Insomnia API file (**OPTIONAL**)
 
 <br>
 
